@@ -1,7 +1,7 @@
 {
   "experiment": "e8_cross_fidelity",
   "netcap_version": "0.1.0",
-  "git_commit": "58718118939e54dc34440cf5f576240a98654712",
+  "git_commit": "62fdaaa4bc145c9ddc95782e1742aefae6fd8400",
   "seed": 20260805,
   "baseline_scenario": "reference_405b_16k",
   "baseline_digest": "87055490caa7ae6d",

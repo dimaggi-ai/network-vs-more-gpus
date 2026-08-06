@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Network capacity is sometimes compute capacity: an accounting framework and decision boundaries for infrastructure investment in large-scale AI training"
+abstract: >-
+  An accounting framework that assigns every accelerator-second in a large
+  synchronous training job to one of four mutually exclusive fates, a
+  substitution metric that expresses an infrastructure improvement as the
+  equivalent accelerator purchase, and decision-boundary maps identifying which
+  marginal infrastructure investment yields the most productive accelerator time
+  in each operating regime.
+authors:
+  - family-names: Nanyonga
+    given-names: Margaret
+version: 0.1.0
+date-released: "2026-08-05"
+license: MIT
+keywords:
+  - distributed training
+  - capacity planning
+  - network performance
+  - reliability
+  - goodput
