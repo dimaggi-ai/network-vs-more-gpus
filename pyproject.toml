@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "netcap"
+version = "0.1.0"
+description = "Accelerator-time capacity accounting and infrastructure investment comparison for large-scale AI training"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Margaret Nanyonga" }]
+keywords = [
+  "distributed training",
+  "capacity planning",
+  "network performance",
+  "reliability",
+  "goodput",
+]
+classifiers = [
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+  "Topic :: System :: Distributed Computing",
+]
+dependencies = [
+  "numpy==2.2.6",
+  "scipy==1.15.3",
+  "pandas==2.2.3",
+  "matplotlib==3.10.0",
+  "pyyaml==6.0.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==8.3.4"]
+
+[project.scripts]
+netcap = "netcap.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"

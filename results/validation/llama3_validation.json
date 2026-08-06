@@ -1,0 +1,34 @@
+{
+  "calibrated_kernel_efficiency": 0.5705774221483737,
+  "calibration_anchor_tflops_pred": 430.0,
+  "calibration_anchor_tflops_obs": 430.0,
+  "heldout_tflops_pred": 406.2899883664435,
+  "heldout_tflops_obs": 400.0,
+  "heldout_rel_error": 0.015724970916108704,
+  "heldout_mfu_pred": 0.41060130203784084,
+  "heldout_mfu_obs": 0.41,
+  "predicted_interruptions_54d": 526.6303132938187,
+  "observed_interruptions_54d": 419,
+  "interruption_rel_error": 0.25687425607116643,
+  "predicted_ettr": 0.8884866860921689,
+  "published_ettr_floor": 0.9,
+  "predicted_ucf_pool_level": 0.6826675888886502,
+  "job_mttf_hours": 2.34375,
+  "implied_failure_rate_per_node_day_from_llama3": 0.0037887008101851853,
+  "checks": {
+    "T1_heldout_throughput": true,
+    "T2_interruptions": true,
+    "T3_ettr": true,
+    "T4_kernel_efficiency_plausible": true
+  },
+  "thresholds": {
+    "T1_heldout_throughput_rel_error": 0.1,
+    "T2_interruption_rel_error": 0.35,
+    "T3_ettr_floor": 0.85,
+    "T4_kernel_efficiency_range": [
+      0.5,
+      0.85
+    ]
+  },
+  "all_checks_pass": true
+}

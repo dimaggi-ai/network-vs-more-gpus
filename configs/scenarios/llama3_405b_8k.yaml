@@ -1,0 +1,78 @@
+# Llama 3 405B pre-training on 16K H100, reconstructed from the public paper.
+#
+# Every field marked [published] is taken from arXiv:2407.21783 (SOURCES.md S3)
+# or the H100 datasheet. Every field marked [assumed] is a modeling assumption
+# recorded in ASSUMPTIONS.md. This scenario is the primary external validation
+# target: the model must land inside the published MFU and effective-training-
+# time ranges without any of the [assumed] values being tuned to make it fit.
+name: llama3_405b_8k
+
+model:
+  name: llama3-405b
+  n_layers: 126            # [published]
+  hidden: 16384            # [published]
+  n_params: 4.05e11        # [published]
+  seq_len: 8192            # [published] pre-training stage sequence length
+  vocab: 128256            # [published]
+  n_heads: 128             # [published]
+  n_kv_heads: 8            # [published] grouped-query attention
+  ffn_multiplier: 3.25     # [published] SwiGLU ratio implied by the model card
+
+accelerator:
+  name: H100-SXM
+  peak_flops_bf16: 9.895e14   # [published] 989.5 TFLOP/s dense BF16, no sparsity
+  memory_gb: 80               # [published]
+  scaleup_bw_gbps: 3600       # [published] NVLink 450 GB/s per GPU unidirectional
+  nic_bw_gbps: 400            # [published] 400 Gbps RoCE per GPU
+  accelerators_per_node: 8    # [published]
+
+topology:
+  scaleup_domain: 8        # [published] 8-GPU NVLink domain
+  pod_size: 3072           # [published] full bisection within a 3072-GPU pod
+  oversubscription: 7.0    # [published] 1:7 across pods
+  alpha_scaleup_us: 2.0    # [assumed]
+  alpha_pod_us: 6.0        # [assumed]
+  alpha_xpod_us: 15.0      # [assumed]
+  net_efficiency: 0.85     # [assumed] achievable fraction of line rate
+
+parallelism:
+  tp: 8                    # [published]
+  pp: 16                   # [published]
+  cp: 1                    # [published] for the 8K-sequence pre-training stage
+  dp: 64                   # [published] 8*16*1*64 = 8192
+  micro_batch: 1           # [assumed]
+  global_batch_seqs: 2048  # [published] 16M tokens per step at 8192 sequence length
+  zero_stage: 1            # [assumed]
+  interleave_factor: 8     # [assumed] paper describes an interleaved schedule
+  sequence_parallel: true  # [assumed]
+  recompute: selective     # [published] selective activation checkpointing
+  overlap_dp: 0.85         # [assumed]
+  overlap_tp: 0.10         # [assumed] tensor-parallel collectives are on the critical path
+  overlap_pp: 0.70         # [assumed]
+  overlap_cp: 0.30         # [assumed]
+  grad_bytes: 4            # [assumed] FP32 gradient reduction
+  act_bytes: 2             # [published] BF16 activations
+
+reliability:
+  failure_rate_per_node_day: 5.0e-3   # [published] Meta HPCA 2025, SOURCES.md S2
+  detect_time_s: 120                   # [assumed]
+  restart_time_s: 300                  # [assumed]
+  checkpoint_interval_s: null          # null selects the Daly optimum
+  checkpoint_write_s: 20               # [derived] up to 4 GB per GPU against the reported storage fabric
+  checkpoint_blocking_fraction: 1.0    # [published] the paper describes blocking writes it aims to shorten
+  repair_time_s: 3600                  # [assumed]
+  spare_fraction: 0.03                 # [derived] cluster held 24K GPUs while the job used up to 16K; failures handled by automation
+  straggler_cv: 0.0
+  failslow_prob_per_node: 0.0
+  failslow_slowdown: 1.0
+  stranded_fraction: 0.0
+
+kernel:
+  kernel_efficiency: 0.72  # [assumed] large-GEMM fraction of dense peak on H100
+
+window_days: 54.0          # [published] the paper's 54-day reliability snapshot
+scaling_mode: strong
+notes: >
+  Primary validation scenario. Published targets: BF16 MFU 38-43 percent
+  (41 percent at full 16K scale) and effective training time above 90 percent,
+  with 419 unexpected interruptions in 54 days.
