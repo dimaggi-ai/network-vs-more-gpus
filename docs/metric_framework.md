@@ -72,7 +72,7 @@ It was rejected as a decision metric for three reasons, and retained only as a c
 2. **It ignores the cost of growth.** It cannot represent the fact that adding accelerators makes communication and failures worse.
 3. **It cannot express unattainability.** It always returns a finite number, including in regimes where no purchase can match the intervention.
 
-The measured consequence: the informal figure is 0.73 of SEA at 2,048 accelerators and 0.16 at 65,536. It understates intervention value by 1.4x at small scale and 6.2x at large scale, and the bias grows precisely where the decision matters most.
+The measured consequence: the informal figure is 0.73 of SEA at 2,048 accelerators and 0.22 at 65,536. It understates intervention value by 1.4x at small scale and 4.6x at large scale, and the bias grows precisely where the decision matters most.
 
 ## 6. Attribution when interventions interact
 
@@ -84,17 +84,17 @@ The measured non-additivity, excluding cases where SEA is unbounded:
 |---|---|---|
 | Bandwidth plus flat fabric | +6.5 percent | Substitutes, as expected |
 | Detection plus restart plus checkpoint | -8.9 percent | **Complements**, contrary to the stated hypothesis |
-| Mixed network and reliability | +7.5 percent | Substitutes |
+| Mixed network and reliability | +12.0 percent | Substitutes |
 
 Recovery improvements compound: faster checkpointing shortens the optimal checkpoint interval, which shrinks the window of discarded work, which makes faster detection and restart worth more. Reported as a refutation of hypothesis H3's stated direction.
 
 ## 7. Uncertainty and rank stability
 
-Point estimates are not reported as decisions. Assumption parameters are drawn from documented ranges and the ranking is recomputed per draw; the reported quantity is the share of draws in which each intervention ranks first. Across 323 in-envelope draws at 16,384 accelerators: halving the failure rate 52.3 percent, straggler control 24.8 percent, faster checkpointing 19.2 percent, faster restart 3.1 percent, quadrupled bandwidth 0.6 percent.
+Point estimates are not reported as decisions. Assumption parameters are drawn from documented ranges and the ranking is recomputed per draw; the reported quantity is the share of draws in which each intervention ranks first. Across 323 in-scope draws at 16,384 accelerators: cutting the blocking checkpoint cost to 5 seconds 45.8 percent, halving the failure rate 29.1 percent, straggler control 15.8 percent, faster restart 8.7 percent, quadrupled bandwidth 0.6 percent. Absolute-target interventions are strongest where the drawn baseline is worst, which is itself part of the regime dependence.
 
 ## 8. Validity envelope
 
-The fast analytical path is trusted only where **recovery pressure**, the share of runtime consumed by discarded work plus restart, is below 0.25. Inside that envelope the analytical and event-driven paths agree to within 1.4 percent on UCF; outside it they diverge to 29.6 percent. Rows outside the envelope are retained in the raw output, flagged, and excluded from headline claims; where such a case matters, it is recomputed with the event-driven path.
+Configurations where **recovery pressure**, the share of runtime consumed by discarded work plus restart, exceeds 0.25 are excluded from headline claims. The exclusion is a modeling-scope judgment, not a fidelity boundary: the analytical and event-driven paths agree to within 0.02 percent on UCF at every tested severity, including far beyond the threshold. Beyond it, the model's independence assumptions are outside their calibrated regime and no operator would run such a configuration uncorrected. An earlier version of the event-driven path mis-booked detection time and appeared to diverge at high severity; the error and its correction are recorded in DECISIONS.md D14.
 
 ## 9. Metrics for inference
 

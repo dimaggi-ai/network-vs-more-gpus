@@ -206,7 +206,7 @@ def fig3_decision_map() -> None:
         ax.tick_params(left=False)
         blank = int((~sub.within_validity_envelope.reindex(sub.index, fill_value=True)).sum())
         covered = len(sub)
-        note = "" if covered == len(rates) * len(sigmas) else "  (blank: outside validity envelope)"
+        note = "" if covered == len(rates) * len(sigmas) else "  (blank: outside scope guard)"
         title(ax, f"{int(n/1024)}K accelerators{note}")
     np.atleast_1d(axes)[0].set_ylabel("Cross-pod oversubscription")
     np.atleast_1d(axes)[0].tick_params(left=True)
@@ -319,18 +319,21 @@ def fig7_cross_fidelity() -> None:
     inside = d[d.within_validity_envelope]
     outside = d[~d.within_validity_envelope]
     ax.scatter(inside.recovery_pressure, inside.rel_error_ucf * 100, s=42,
-               color=SERIES[0], label="Inside validity envelope", zorder=3,
+               color=SERIES[0], label="Inside scope", zorder=3,
                edgecolor="#fcfcfb", linewidth=1.0)
     ax.scatter(outside.recovery_pressure, outside.rel_error_ucf * 100, s=42,
-               color=SERIES[1], label="Outside (excluded from claims)", zorder=3,
+               color=SERIES[1], label="Outside scope (excluded from claims)", zorder=3,
                edgecolor="#fcfcfb", linewidth=1.0)
     ax.axvline(0.25, color=INK_MUTED, linewidth=1.0, linestyle=(0, (4, 3)))
-    ax.annotate("Declared envelope", xy=(0.25, 20), xytext=(0.27, 22),
+    top = max(0.08, d.rel_error_ucf.max() * 100 * 1.35)
+    ax.annotate("Scope guard", xy=(0.25, top * 0.92), xytext=(0.26, top * 0.92),
                 color=INK_SECONDARY, fontsize=8)
+    ax.set_ylim(0, top)
     ax.set_xlabel("Recovery pressure (recovery time as a share of runtime)")
     ax.set_ylabel("Disagreement in useful capacity fraction (%)")
-    title(ax, "The fast path agrees with the exact path where it claims to",
-          "Maximum 1.4 percent disagreement inside the envelope")
+    title(ax, "The two implementations agree at every tested severity",
+          "Maximum disagreement 0.02 percent. The 0.25 line is a modeling-scope guard,\n"
+          "not an accuracy boundary; see DECISIONS.md D14.")
     legend(ax, loc="upper left")
     save(fig, "fig7_cross_fidelity")
 

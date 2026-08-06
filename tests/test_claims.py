@@ -37,16 +37,17 @@ def test_capacity_collapses_with_scale(s):
 
 def test_rank_reversals_exist(s):
     """The decision layer's justification: no single intervention dominates."""
-    assert len(s["decision_map"]["distinct_winners"]) == 4
+    assert len(s["decision_map"]["distinct_winners"]) == 3
     assert s["decision_map"]["cells_inside_envelope"] == 96
     assert "bandwidth_4x" not in s["decision_map"]["winners_by_scale"]["16384"]
     assert "bandwidth_4x" in s["decision_map"]["winners_by_scale"]["65536"]
+    assert s["decision_map"]["winners_by_scale"]["65536"]["reliability_2x"] == 28
 
 
 def test_informal_metric_bias(s):
     f = s["naive_metric_understatement_factor"]
     assert f["2048"] == pytest.approx(1.36, abs=0.02)
-    assert f["65536"] == pytest.approx(6.24, abs=0.05)
+    assert f["65536"] == pytest.approx(4.62, abs=0.05)
     assert f["2048"] < f["65536"], "bias must grow with scale"
 
 
@@ -60,16 +61,18 @@ def test_recovery_interventions_are_complements(s):
 
 def test_rank_stability(s):
     share = s["rank_stability"]["share_ranked_first_pct"]
-    assert share["reliability_2x"] == pytest.approx(52.3, abs=0.1)
+    assert share["fast_checkpoint"] == pytest.approx(45.8, abs=0.1)
+    assert share["reliability_2x"] == pytest.approx(29.1, abs=0.1)
     assert share["bandwidth_4x"] == pytest.approx(0.6, abs=0.1)
     assert s["rank_stability"]["draws_inside_envelope"] == 323
 
 
 def test_cross_fidelity_envelope(s):
     cf = s["cross_fidelity"]
-    assert cf["max_rel_error_ucf_inside"] == pytest.approx(0.0143, abs=1e-3)
-    assert cf["max_rel_error_ucf_outside"] == pytest.approx(0.2962, abs=1e-3)
-    assert cf["max_rel_error_ucf_inside"] < 0.05
+    # Agreement holds at every tested severity, outside the scope guard included;
+    # the guard is a modeling-scope judgment, not a fidelity boundary (D14).
+    assert cf["max_rel_error_ucf_inside"] < 0.005
+    assert cf["max_rel_error_ucf_outside"] < 0.005
 
 
 def test_external_validation(s):
@@ -85,7 +88,9 @@ def test_external_validation(s):
 def test_counterexamples(s):
     """The cases where this project's own thesis fails."""
     c = s["counterexamples"]
-    assert c["perfect_network"]["max_network_sea"] == 0.0
+    # On an already fast, flat fabric a further 4x is worth under 0.3 percent of
+    # the pool while halving the failure rate is worth 5.7 percent of it.
+    assert c["perfect_network"]["max_network_sea"] == pytest.approx(46.7, abs=1.0)
     assert c["perfect_network"]["max_reliability_sea"] == pytest.approx(954.3, abs=1.0)
     assert c["huge_job"]["any_unattainable_by_scaling"] is True
     assert c["huge_job"]["within_validity_envelope"] is False

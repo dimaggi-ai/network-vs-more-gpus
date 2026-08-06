@@ -27,9 +27,13 @@ import numpy as np
 from .config import ReliabilitySpec, SECONDS_PER_DAY
 
 
-#: Above this recovery pressure the analytical path loses accuracy against the
-#: event-driven path. Established empirically in experiment E8 and enforced by
-#: ``tests/test_reliability.py::test_fidelity_agreement_within_validity_envelope``.
+#: Scope guard, not an accuracy cliff: the analytical and event-driven paths
+#: agree to well under one percent at every tested recovery pressure (E8).
+#: Configurations above this threshold are excluded from headline claims anyway,
+#: because a job spending more than a quarter of its runtime on discarded work
+#: and restart is outside the regime the model's independence assumptions
+#: (uncorrelated failures, unqueued repairs) were calibrated for, and no
+#: operator would run one uncorrected. See DECISIONS.md D9 and D14.
 VALIDITY_RECOVERY_PRESSURE = 0.25
 
 
@@ -48,14 +52,13 @@ class ReliabilityTiming:
 
     @property
     def recovery_pressure(self) -> float:
-        """Recovery time per failure divided by mean time to failure.
+        """Share of runtime consumed by discarded work plus restart.
 
-        The dimensionless parameter that governs how far the renewal
-        approximation drifts from the exact timeline. Below
-        :data:`VALIDITY_RECOVERY_PRESSURE` the two agree to within a few percent;
-        above it the job spends a large share of its life recovering and the
-        linearized decomposition breaks down. Configurations above the threshold
-        are excluded from headline results rather than reported with a caveat.
+        The dimensionless severity of the failure regime. Above
+        :data:`VALIDITY_RECOVERY_PRESSURE` the configuration is excluded from
+        headline results as out of scope; the exclusion is a modeling-scope
+        judgment, not a fidelity limit, since the two implementations agree
+        closely at every tested severity.
         """
         if not math.isfinite(self.job_mttf_s) or self.job_mttf_s <= 0:
             return 0.0
@@ -241,22 +244,39 @@ def monte_carlo_reliability(
             if t >= running_window:
                 break
             fails += 1
-            # Work since the last durable checkpoint, plus the detection window,
-            # is discarded. Move it out of the healthy buckets.
-            lost = (t - last_ckpt) + rel.detect_time_s
-            lost = min(lost, run + c)
-            lost_c = lost * (w_block / wall_period) if wall_period > 0 else 0.0
+            # Work performed since the last durable checkpoint moves out of the
+            # healthy buckets into discarded. Detection wall-time is *new* time,
+            # booked directly as discarded; it was never part of the healthy
+            # span, so it must not be subtracted from run or c. (An earlier
+            # version subtracted it and then rescaled all buckets to fit the
+            # window, which biased every bucket at high failure rates; see
+            # DECISIONS.md D14.)
+            lost_work = min(t - last_ckpt, run + c)
+            lost_c = lost_work * (w_block / wall_period) if wall_period > 0 else 0.0
             lost_c = min(lost_c, c)
             c -= lost_c
-            run -= lost - lost_c
-            d += lost
-            t += rel.detect_time_s + restart_eff
-            r += restart_eff
+            run -= lost_work - lost_c
+            d += lost_work
+
+            detect_span = min(rel.detect_time_s, running_window - t)
+            d += detect_span
+            t += detect_span
+            if t >= running_window:
+                break
+            restart_span = min(restart_eff, running_window - t)
+            r += restart_span
+            t += restart_span
             last_ckpt = t  # resume from checkpoint state
+
+        # Every wall-clock second is booked exactly once; assert it rather than
+        # rescaling, so an accounting error fails loudly instead of hiding.
         total = d + r + c + run
-        if total > 0:
-            scale = running_window / total
-            acc += np.array([d, r, c, run]) * scale
+        if abs(total - running_window) > 1e-6 * max(1.0, running_window):
+            raise AssertionError(
+                f"monte carlo accounting drift: booked {total:.6f} of "
+                f"{running_window:.6f} wall seconds"
+            )
+        acc += np.array([d, r, c, run])
 
     acc /= n_replicates
     return ReliabilityTiming(

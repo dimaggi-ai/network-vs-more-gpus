@@ -91,6 +91,8 @@ class ParallelismSpec:
     global_batch_seqs: int = 2048
     zero_stage: int = 1
     interleave_factor: int = 1  # virtual pipeline stages per device
+    # Descriptive only: the tensor-parallel collective volumes above already
+    # assume a sequence-parallel layout, so this flag does not change the model.
     sequence_parallel: bool = True
     recompute: str = "selective"  # none | selective | full
     overlap_dp: float = 0.85
@@ -196,7 +198,7 @@ def _coerce(section_type: type, values: Dict[str, Any]) -> Dict[str, Any]:
     out: Dict[str, Any] = {}
     for key, value in values.items():
         target = hints.get(key)
-        if isinstance(value, str) and target in ("float", float):
+        if isinstance(value, str) and target is not None and "float" in str(target):
             out[key] = float(value)
         elif isinstance(value, str) and target in ("int", int):
             out[key] = int(float(value))

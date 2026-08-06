@@ -12,3 +12,4 @@ paper/*.bbl
 paper/*.blg
 paper/*.synctex.gz
 .DS_Store
+.qa-clone/

@@ -74,7 +74,7 @@ The source paper's Table 4 third row lists TP=8, CP=16, PP=16, DP=4 alongside 16
 
 `configs/scenarios/llama3_405b_16k.yaml` is the validation target and is not used for any study result. `configs/scenarios/reference_405b_16k.yaml` is the study baseline: it adopts the calibrated kernel efficiency, enables a nonzero straggler term, and shortens the window to 30 days. Keeping them separate prevents a study parameter from silently contaminating a validation claim.
 
-The straggler coefficient of variation is set to 0.02, which produces roughly a 10 percent synchronization tax at 16,384 accelerators, consistent with the reported magnitude that 42.5 percent of production jobs run at least 10 percent slower due to stragglers.
+The straggler coefficient of variation is set to 0.02, which produces roughly a 9 percent synchronization tax at 16,384 accelerators, consistent with the reported magnitude that 42.5 percent of production jobs run at least 10 percent slower due to stragglers.
 
 ---
 
@@ -130,3 +130,65 @@ from -4.1 to -8.9 percent. The decision map, the rank-stability shares, the
 capacity ledger, and every validation result were unchanged, which is itself a
 useful robustness observation: the sampling bias shifted magnitudes, not
 comparisons. All quoted numbers were regenerated and the claims test updated.
+
+---
+
+## D14. Correct a detection-time accounting bug in the event-driven path; reframe the envelope as a scope guard
+**Date:** 2026-08-06. **Phase:** 10 quality pass, from an independent code review.
+
+The Monte Carlo path subtracted detection time from the running and checkpoint
+buckets on each failure, although detection wall-time had never been added to
+those buckets, and then rescaled every bucket so their sum matched the window.
+The rescale hid the deficit and biased all buckets at high failure rates: at
+65,536 accelerators and 3e-2 failures per node-day the path under-reported
+running time by roughly 11 percent while the analytical path was within 0.06
+percent of an independently written event simulation.
+
+Consequences of the correction:
+
+1. The two implementations now agree to within 0.02 percent at every tested
+   severity, so the "validity envelope" is no longer a fidelity boundary. The
+   0.25 recovery-pressure threshold is retained as a modeling-scope guard:
+   beyond it the independence assumptions are outside their calibrated regime
+   and no operator would run such a configuration uncorrected. D9's original
+   justification is superseded by this entry.
+2. The 131,000-accelerator counterexample was restated with corrected numbers:
+   throughput peaks 1.2 percent above the baseline pool (31,566 at 1.25x)
+   before declining, rather than declining monotonically as previously
+   reported. The unattainability conclusion itself survives: the best
+   reachable throughput (31,566) remains far below the halved-failure-rate
+   target (38,640), and both implementations agree on this case to 0.03
+   percent.
+3. The Monte Carlo path now asserts wall-clock conservation internally and
+   raises instead of rescaling, and a cross-fidelity test asserts agreement at
+   every cell rather than skipping the harsh ones.
+
+---
+
+## D15. Give relatively-worded interventions multiplier semantics; reprice pool-repartitioning interventions at fixed budget
+**Date:** 2026-08-06. **Phase:** 10 quality pass, from the same review.
+
+Interventions named as ratios ("bandwidth 2x", "failure rate halved",
+"straggler control") were implemented as absolute target values. On the
+regime-shifted baselines of the decision map that silently changed their
+strength: at a cell with 0.012 failures per node-day, "halved" (implemented as
+an absolute 0.0025) was nearly a 5x improvement, and at 0.001 it was a
+degradation clamped to zero. The decision map and the uncertainty analysis were
+therefore comparing interventions whose strength varied by cell in ways their
+names did not state.
+
+Relative interventions are now true multipliers applied to whatever the cell's
+baseline is, and absolute-target interventions ("deploy a system that detects
+in 20 s") remain absolute, which is their honest semantics. Interventions that
+re-partition the paid pool (spares) are re-planned at the baseline's pool size,
+so adding spares shrinks the job rather than growing the budget.
+
+Effects on results, all regenerated: the decision map now has three distinct
+winners rather than four (faster restart no longer ranks first anywhere,
+although it remains worth hundreds to thousands of accelerators); reliability
+dominates most of the 65,536-accelerator map; the rank-stability leader at
+16,384 accelerators becomes the 5-second checkpoint capability (45.8 percent of
+draws) ahead of halving the failure rate (29.1 percent); and the informal
+metric's worst-case understatement is 4.6x rather than 6.2x. The qualitative
+conclusions (rank reversals exist, bandwidth rarely wins at 16K scale, recovery
+improvements are complements) are unchanged.

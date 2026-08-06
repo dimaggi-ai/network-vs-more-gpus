@@ -124,25 +124,38 @@ def test_analytical_matches_monte_carlo(n_acc):
 
 @pytest.mark.parametrize("n_acc", [2048, 8192, 16384, 65536])
 @pytest.mark.parametrize("rate", [1e-3, 5e-3, 1.5e-2, 3e-2])
-def test_fidelity_agreement_within_validity_envelope(n_acc, rate):
-    """Inside the declared envelope the fast path must track the exact path.
+def test_fidelity_agreement_everywhere(n_acc, rate):
+    """The two implementations must agree at every tested severity.
 
-    Outside it, the fast path is known to drift and the configuration is
-    excluded from headline results, so no accuracy claim is made. This test
-    pins the envelope: if the fast path ever drifts more than 5 percent while
-    still declaring itself valid, the envelope is wrong and must be retightened.
+    The validity envelope is a modeling-scope guard, not an accuracy boundary:
+    the fast path tracks the event-driven path to well under one percent even at
+    recovery pressures far beyond the envelope. An earlier version of the
+    event-driven path mis-attributed detection time and appeared to diverge at
+    high severity; see DECISIONS.md D14. This test asserts agreement at every
+    cell, including the out-of-envelope ones, so a regression in either path
+    fails loudly.
     """
     per_node = 8
     spec = _spec(failure_rate_per_node_day=rate)
     a = analytical_reliability(spec, n_acc, per_node, WINDOW)
-    if not a.within_validity_envelope:
-        pytest.skip(f"recovery pressure {a.recovery_pressure:.3f} is outside the envelope")
     m = monte_carlo_reliability(spec, n_acc, per_node, WINDOW, seed=17, n_replicates=300)
     rel_error = abs(m.running_s - a.running_s) / a.running_s
-    assert rel_error < 0.05, (
-        f"n={n_acc} rate={rate}: {rel_error:.3f} drift at recovery pressure "
+    assert rel_error < 0.02, (
+        f"n={n_acc} rate={rate}: {rel_error:.4f} drift at recovery pressure "
         f"{a.recovery_pressure:.3f}"
     )
+
+
+def test_monte_carlo_conserves_wall_clock():
+    """Every wall-clock second must be booked exactly once, even at severities
+    where recovery dominates. The Monte Carlo path asserts this internally and
+    raises rather than rescaling; this test exercises that assertion at the
+    harshest configuration used anywhere in the study."""
+    spec = _spec(failure_rate_per_node_day=3e-2)
+    m = monte_carlo_reliability(spec, 65536, 8, WINDOW, seed=3, n_replicates=50)
+    booked = m.discarded_s + m.restart_blocked_s + m.checkpoint_blocked_s + m.running_s
+    window_running = WINDOW - m.unavailable_s
+    assert booked == pytest.approx(window_running, rel=1e-6)
 
 
 def test_failure_free_cluster_is_fully_running():

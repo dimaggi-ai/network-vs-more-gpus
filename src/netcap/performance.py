@@ -278,7 +278,12 @@ def step_breakdown(scenario: ScenarioConfig) -> StepBreakdown:
         one = allgather_on_layout(kv_tensor, lay_cp, topo, acc.scaleup_bw_gbps, acc.nic_bw_gbps)
         t_cp = 3.0 * layers_per_stage * micro_per_iter * one
 
-    # Pipeline parallel: activation handoff at stage boundaries, forward and backward.
+    # Pipeline parallel: activation handoff at stage boundaries. A synchronous
+    # pipeline is paced by its slowest inter-stage link, so the handoff is
+    # costed at the worst tier any boundary crosses; enlarging the scale-up
+    # domain therefore does not relieve pp unless the whole pipeline fits in
+    # one domain. Consequently the scale-up intervention prices only what a
+    # bigger domain does for this fixed plan, not the replanning it enables.
     t_pp = 0.0
     if par.pp > 1:
         crosses = "crosspod" if group_layout(par.pp, stride_pp, topo).pods > 1 else "pod"
@@ -287,7 +292,9 @@ def step_breakdown(scenario: ScenarioConfig) -> StepBreakdown:
         )
         t_pp = 2.0 * micro_per_iter * one
 
-    # Data parallel: gradient reduction over the sharded parameter set.
+    # Data parallel: gradient reduction over the sharded parameter set. With
+    # context parallelism the reduction would also span the cp group; no shipped
+    # configuration uses cp > 1, and the omission is recorded in ASSUMPTIONS.md.
     t_dp = 0.0
     if par.dp > 1:
         params_local = model.n_params / (par.tp * par.pp)

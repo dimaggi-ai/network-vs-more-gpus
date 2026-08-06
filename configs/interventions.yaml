@@ -1,5 +1,10 @@
 # Infrastructure interventions compared against buying more accelerators.
 #
+# Two kinds: `multipliers` scale the baseline value, so a 2x stays a 2x on every
+# regime-shifted baseline; `overrides` set an absolute target ("deploy a system
+# that detects in 20 s"), so their strength legitimately depends on where the
+# baseline starts.
+#
 # Each intervention is a change to the study baseline. Costs are deliberately
 # left unspecified: the model's output is the break-even cost in accelerator
 # equivalents, so an operator can compare it against their own prices without
@@ -8,14 +13,14 @@
 
 interventions:
   - name: bandwidth_2x
-    description: Double per-accelerator scale-out bandwidth, 400 to 800 Gbps
-    overrides:
-      accelerator.nic_bw_gbps: 800.0
+    description: Double per-accelerator scale-out bandwidth
+    multipliers:
+      accelerator.nic_bw_gbps: 2.0
 
   - name: bandwidth_4x
-    description: Quadruple per-accelerator scale-out bandwidth, 400 to 1600 Gbps
-    overrides:
-      accelerator.nic_bw_gbps: 1600.0
+    description: Quadruple per-accelerator scale-out bandwidth
+    multipliers:
+      accelerator.nic_bw_gbps: 4.0
 
   - name: flat_fabric
     description: Remove cross-pod oversubscription, 1:7 to 1:1
@@ -23,14 +28,14 @@ interventions:
       topology.oversubscription: 1.0
 
   - name: scaleup_2x
-    description: Double the scale-up domain, 8 to 16 accelerators
-    overrides:
-      topology.scaleup_domain: 16
+    description: Double the scale-up domain, holding the parallelism plan fixed
+    multipliers:
+      topology.scaleup_domain: 2.0
 
   - name: reliability_2x
     description: Halve the node failure rate through hardware and firmware work
-    overrides:
-      reliability.failure_rate_per_node_day: 0.0025
+    multipliers:
+      reliability.failure_rate_per_node_day: 0.5
 
   - name: fast_detection
     description: Cut failure detection from 120 s to 20 s with finer telemetry
@@ -54,8 +59,8 @@ interventions:
 
   - name: straggler_control
     description: Halve per-rank timing jitter through placement and tuning
-    overrides:
-      reliability.straggler_cv: 0.01
+    multipliers:
+      reliability.straggler_cv: 0.5
 
 # Regimes used for the decision maps. Each is a named point in operating space,
 # not a prediction about any specific operator.

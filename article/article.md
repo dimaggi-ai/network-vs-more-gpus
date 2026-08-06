@@ -41,7 +41,7 @@ So I defined the comparison the other way around. **Substitution-Equivalent Acce
 
 At the reference baseline, a marginal accelerator contributes 0.502 productive accelerator-seconds per accelerator-second purchased. So an improvement worth 141 productive accelerators is worth 281 purchased ones. The informal method would have told you 141.
 
-That gap widens fast. The informal figure is 73% of the true substitution value at 2,048 accelerators and 16% at 65,536. It understates the case for infrastructure work by 1.4x at small scale and by more than 6x at large scale, which is exactly backwards from where you want your estimate to be reliable.
+That gap widens fast. The informal figure is 73% of the true substitution value at 2,048 accelerators and 22% at 65,536. It understates the case for infrastructure work by 1.4x at small scale and by more than 4.5x at large scale, which is exactly backwards from where you want your estimate to be reliable.
 
 There is a practical benefit to defining it this way. Substitution-Equivalent Accelerators **is** a break-even cost. If an intervention costs less than that many fully-loaded accelerators, fund it. The rule needs a ratio, not a price, which is why this project quotes no dollar figures anywhere. I do not know your capital costs, and inventing them would have added precision without accuracy.
 
@@ -49,13 +49,13 @@ There is a practical benefit to defining it this way. Substitution-Equivalent Ac
 
 Here is the part I did not expect.
 
-I swept node failure rate against cross-pod oversubscription at two cluster sizes and asked which single intervention has the highest substitution value in each cell. Across 96 cells that fall inside the model's validity envelope, **four different interventions win**, and the winning set is different at the two sizes.
+I swept node failure rate against cross-pod oversubscription at two cluster sizes and asked which single intervention has the highest substitution value in each cell. Across 96 cells that fall inside the model's scope, **three different interventions win**, and the winning mix is different at the two sizes.
 
-At 16,384 accelerators, the map splits between straggler control at lower failure rates and halving the node failure rate at higher ones. Additional bandwidth never wins anywhere on that map.
+At 16,384 accelerators, the map splits evenly between straggler control at lower failure rates and halving the node failure rate at higher ones. Additional bandwidth never wins anywhere on that map.
 
-At 65,536 accelerators the picture changes. Quadrupled bandwidth takes the low-failure, heavily-oversubscribed corner. Faster restart takes a middle band. The two winners from the smaller cluster keep the rest.
+At 65,536 accelerators, reliability dominates most of the map, quadrupled bandwidth takes the low-failure, heavily-oversubscribed corner, and straggler control keeps a low-failure fringe. Faster restart never ranks first, yet it is still worth hundreds to thousands of accelerators in absolute terms. Ranking first and being worth funding are different questions.
 
-Because point rankings are not decisions, I re-ran the ranking across 323 draws from documented parameter ranges, letting kernel efficiency, overlap fractions, detection time, restart time, checkpoint cost, and jitter all vary. At 16,384 accelerators: halving the failure rate ranks first in 52.3% of draws, straggler control 24.8%, faster checkpointing 19.2%, faster restart 3.1%, and quadrupled bandwidth 0.6%.
+Because point rankings are not decisions, I re-ran the ranking across 323 draws from documented parameter ranges, letting kernel efficiency, overlap fractions, detection time, restart time, checkpoint cost, and jitter all vary. At 16,384 accelerators: cutting the blocking checkpoint cost to 5 seconds ranks first in 45.8% of draws, halving the failure rate in 29.1%, straggler control in 15.8%, faster restart in 8.7%, and quadrupled bandwidth in 0.6%.
 
 I started this project with a thesis that network capacity is compute capacity. At the most common operating point I examined, additional bandwidth is almost never the best marginal investment. That is a real finding and I am reporting it rather than reframing it.
 
@@ -67,9 +67,9 @@ It holds in specific, identifiable places, and they are worth knowing.
 
 **At the largest scales with an oversubscribed spine.** This is the corner where bandwidth wins outright at 65,536 accelerators.
 
-**When nothing can be bought instead.** At roughly 131,000 accelerators under this configuration, productive throughput actually *decreases* as the pool grows: 29,682 productive accelerators at the baseline, 28,234 at 1.5x the pool, 25,016 at 2x. Meanwhile halving the failure rate takes it to 38,075. There is no accelerator purchase that matches the infrastructure improvement, because purchases at that point make things worse. This is the strongest form of the thesis, and it is confined to a regime most operators are not in.
+**When nothing can be bought instead.** At roughly 131,000 accelerators under this configuration, buying is nearly worthless and soon harmful: productive throughput rises just 1.2% to a peak of 31,566 at 1.25x the pool, then falls to 29,628 at 2x. Meanwhile halving the failure rate takes it to 38,640, beyond anything the scaling curve reaches. There is no accelerator purchase that matches the infrastructure improvement. This is the strongest form of the thesis, and it is confined to a regime most operators are not in.
 
-Equally worth knowing is where it clearly fails. Give the model an already-fast, already-flat network and every bandwidth and topology intervention is worth exactly zero, while halving the failure rate is worth 954 accelerators. Run a 1,024-accelerator job and nothing is worth much, because 78% of that pool is already productive. Small jobs do not justify infrastructure investment on capacity grounds.
+Equally worth knowing is where it clearly fails. Give the model an already-fast, already-flat network and a further quadrupling of bandwidth is worth 47 accelerators, three tenths of a percent of the pool, while halving the failure rate is worth 954. Run a 1,024-accelerator job and nothing is worth much, because 78% of that pool is already productive. Small jobs do not justify infrastructure investment on capacity grounds.
 
 ## One result that surprised me
 

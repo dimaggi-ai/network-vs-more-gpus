@@ -13,8 +13,9 @@ First public release.
 ### Validation
 - Kernel efficiency calibrated on the published 8,192-accelerator Llama 3 configuration; held-out 16,384-accelerator prediction within 1.6 percent.
 - Daly's optimal checkpoint interval and Meta's expected-ETTR expression both recovered.
-- Validity envelope defined at recovery pressure 0.25 from cross-fidelity comparison.
+- Scope guard at recovery pressure 0.25; the two independent reliability implementations agree to 0.02 percent at every tested severity (an earlier event-driven accounting bug, found in independent review, is documented in DECISIONS.md D14).
 - One validation failure recorded and diagnosed rather than tuned away (see DECISIONS.md D5).
+- Relative interventions use multiplier semantics so a 2x is a 2x in every regime (D15); the substitution solver samples densely near the baseline (D13).
 
 ### Experiments
 - Nine experiment families, all raw outputs immutable with provenance sidecars.

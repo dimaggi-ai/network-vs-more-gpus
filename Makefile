@@ -40,7 +40,7 @@ smoke-test: test validate
 	$(PY) experiments/run_experiments.py --smoke
 	@echo "smoke test complete"
 
-reproduce: test validate experiments summary figures paper
+reproduce: validate experiments summary figures test paper
 	@echo "full reproduction complete"
 
 clean:

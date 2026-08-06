@@ -62,11 +62,11 @@ reliability:
   detect_time_s: 120                   # [assumed]
   restart_time_s: 300                  # [assumed]
   checkpoint_interval_s: null          # null selects the Daly optimum
-  checkpoint_write_s: 20               # [derived] up to 4 GB per GPU against the reported storage fabric
+  checkpoint_write_s: 20               # [assumed] bounded by the paper's 1-4 GB per GPU against a fabric it says sustains bursty writes
   checkpoint_blocking_fraction: 1.0    # [published] the paper describes blocking writes it aims to shorten
   repair_time_s: 3600                  # [assumed]
-  spare_fraction: 0.03                 # [derived] cluster held 24K GPUs while the job used up to 16K; failures handled by automation
-  straggler_cv: 0.02                   # [calibrated] gives ~10 percent synchronization tax at 16K, matching reported straggler magnitudes
+  spare_fraction: 0.03                 # [assumed] cluster held 24K GPUs while the job used up to 16K and failures were handled by automation; exact reserve not published
+  straggler_cv: 0.02                   # [assumed] gives a ~9 percent synchronization tax at 16K, consistent with reported straggler magnitudes; swept in E7
   failslow_prob_per_node: 0.0
   failslow_slowdown: 1.0
   stranded_fraction: 0.0

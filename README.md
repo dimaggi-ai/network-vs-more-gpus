@@ -31,11 +31,11 @@ What could be done instead was validation against published measurements: one co
 |---|---|---|
 | Availability overstates capacity | ETTR 0.889 against useful capacity 0.627 at 16,384 accelerators, a 26.1 point gap | The reference configuration; the gap follows from the metric definitions |
 | Useful capacity collapses with scale at fixed batch | Productive share falls from 0.781 at 1,024 accelerators to 0.382 at 65,536 | Strong scaling; validated at 8,192 and 16,384 |
-| The informal equivalent-GPU metric is badly biased | Understates value by 1.4x at 2,048 accelerators, 6.2x at 65,536 | Structural, follows from marginal accelerator productivity |
-| No single intervention dominates | Four different interventions rank first across 96 in-envelope regime cells | Failure rate by oversubscription grid at two scales |
-| Bandwidth is rarely the best marginal buy at 16K scale | Ranks first in 0.6% of 323 uncertainty draws; halving the failure rate ranks first in 52.3% | 16,384 accelerators, documented parameter ranges |
+| The informal equivalent-GPU metric is badly biased | Understates value by 1.4x at 2,048 accelerators, 4.6x at 65,536 | Structural, follows from marginal accelerator productivity |
+| No single intervention dominates | Three different interventions rank first across 96 in-scope regime cells | Failure rate by oversubscription grid at two scales |
+| Bandwidth is rarely the best marginal buy at 16K scale | Ranks first in 0.6% of 323 uncertainty draws; reliability and recovery improvements take the other 99.4% | 16,384 accelerators, documented parameter ranges |
 | Recovery improvements are complements, not substitutes | Bundle worth 8.9% more than the sum of parts, against a hypothesis that predicted the opposite | All regimes tested |
-| Beyond a point, accelerators cannot substitute at all | At ~131,000 accelerators productive throughput falls as the pool grows: 29,682 to 25,016 | Confirmed with the high-fidelity path; outside the fast path's envelope |
+| Beyond a point, accelerators cannot substitute at all | At ~131,000 accelerators throughput peaks 1.2% above baseline then falls; the reliability intervention exceeds anything purchasable | Both implementations agree to 0.03% on this case |
 
 ## What remains unvalidated
 
@@ -85,7 +85,7 @@ The full program runs in about **10 seconds** on a laptop. No accelerator access
 | ![Decision map](figures/fig3_decision_map.png) | ![Break-even costs](figures/fig4_sea_by_regime.png) |
 | **The decision map.** Four different interventions rank first depending on regime and scale. | **Break-even costs.** How much each intervention may cost, in accelerators, before it stops paying. |
 | ![Informal metric bias](figures/fig5_naive_bias.png) | ![Rank stability](figures/fig6_rank_stability.png) |
-| **The informal equivalent-GPU metric** understates value by up to 6.2x, worsening with scale. | **Rank stability** over 323 draws from documented parameter ranges. |
+| **The informal equivalent-GPU metric** understates value by up to 4.6x, worsening with scale. | **Rank stability** over 323 draws from documented parameter ranges. |
 
 ## Configuration example
 
@@ -145,7 +145,7 @@ print(result["sea"])   # 281: worth funding if it costs less than 281 accelerato
 
 Stated in full in the [validation report](validation/VALIDATION_REPORT.md) and the paper. The short version: no hardware measurement, a failure model that is optimistic for small jobs, an assumed strong-scaling policy, an assumed dense rank placement that is conservative with respect to this project's own thesis, and a substitution metric whose output has no published counterfactual to check against.
 
-The model also declares a **validity envelope**. Where recovery pressure (the share of runtime consumed by discarded work plus restart) exceeds 0.25, the fast analytical path diverges from the event-driven path by up to 29.6%. Those rows are flagged in the raw output and excluded from headline claims; where such a case matters it is recomputed at high fidelity.
+The model also declares a **scope guard**: configurations where recovery pressure (the share of runtime consumed by discarded work plus restart) exceeds 0.25 are flagged and excluded from headline claims. This is a modeling-scope judgment, not a fidelity boundary; the two independent reliability implementations agree to within 0.02% at every tested severity (see DECISIONS.md D14 for the history of this distinction).
 
 ## Citation
 

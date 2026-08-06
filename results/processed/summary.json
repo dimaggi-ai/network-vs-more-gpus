@@ -18,20 +18,18 @@
     "cells_total": 144,
     "distinct_winners": [
       "bandwidth_4x",
-      "fast_restart",
       "reliability_2x",
       "straggler_control"
     ],
     "winners_by_scale": {
       "16384": {
-        "straggler_control": 36,
-        "reliability_2x": 24
+        "straggler_control": 30,
+        "reliability_2x": 30
       },
       "65536": {
-        "fast_restart": 11,
-        "bandwidth_4x": 10,
-        "straggler_control": 9,
-        "reliability_2x": 6
+        "reliability_2x": 28,
+        "bandwidth_4x": 5,
+        "straggler_control": 3
       }
     }
   },
@@ -39,24 +37,24 @@
     "2048": 0.733,
     "8192": 0.617,
     "16384": 0.501,
-    "32768": 0.343,
-    "65536": 0.16
+    "32768": 0.393,
+    "65536": 0.216
   },
   "naive_metric_understatement_factor": {
     "2048": 1.36,
     "8192": 1.62,
     "16384": 2.0,
-    "32768": 2.92,
-    "65536": 6.24
+    "32768": 2.54,
+    "65536": 4.62
   },
   "additivity": {
     "rows_used": 22,
     "rows_capped_or_outside": 8,
     "by_bundle": {
       "mixed_quad": {
-        "mean_error": 0.075,
-        "min": -0.055,
-        "max": 0.207
+        "mean_error": 0.12,
+        "min": 0.047,
+        "max": 0.167
       },
       "network_pair": {
         "mean_error": 0.065,
@@ -69,23 +67,23 @@
         "max": -0.019
       }
     },
-    "superadditive_rows": 10,
-    "subadditive_rows": 9
+    "superadditive_rows": 7,
+    "subadditive_rows": 12
   },
   "rank_stability": {
     "draws_inside_envelope": 323,
     "draws_total": 400,
     "share_ranked_first_pct": {
-      "reliability_2x": 52.3,
-      "straggler_control": 24.8,
-      "fast_checkpoint": 19.2,
-      "fast_restart": 3.1,
+      "fast_checkpoint": 45.8,
+      "reliability_2x": 29.1,
+      "straggler_control": 15.8,
+      "fast_restart": 8.7,
       "bandwidth_4x": 0.6
     }
   },
   "cross_fidelity": {
-    "max_rel_error_ucf_inside": 0.0143,
-    "max_rel_error_ucf_outside": 0.2962,
+    "max_rel_error_ucf_inside": 0.0002,
+    "max_rel_error_ucf_outside": 0.0002,
     "n_inside": 13,
     "n_outside": 3
   },
@@ -125,7 +123,7 @@
     "perfect_network": {
       "n_accelerators": 16384,
       "baseline_ucf": 0.642,
-      "max_network_sea": 0.0,
+      "max_network_sea": 46.7,
       "max_reliability_sea": 954.3,
       "any_unattainable_by_scaling": false,
       "within_validity_envelope": true
@@ -134,7 +132,7 @@
       "n_accelerators": 16384,
       "baseline_ucf": 0.704,
       "max_network_sea": 385.7,
-      "max_reliability_sea": 0.0,
+      "max_reliability_sea": 18.2,
       "any_unattainable_by_scaling": false,
       "within_validity_envelope": true
     },

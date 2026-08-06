@@ -82,7 +82,10 @@ def load_interventions():
     data = yaml.safe_load(INTERVENTIONS.read_text(encoding="utf-8"))
     items = [
         Intervention(
-            name=i["name"], overrides=i.get("overrides", {}), description=i.get("description", "")
+            name=i["name"],
+            overrides=i.get("overrides", {}),
+            multipliers=i.get("multipliers", {}),
+            description=i.get("description", ""),
         )
         for i in data["interventions"]
     ]

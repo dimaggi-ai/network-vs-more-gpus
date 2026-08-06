@@ -6,10 +6,10 @@ Generated from `results/validation/llama3_validation.json`, `results/raw/e8_cros
 
 | Layer | What it checks | Result |
 |---|---|---|
-| Invariants | Accounting closes; limiting cases; monotonicity | Pass, 46 tests |
+| Invariants | Accounting closes; limiting cases; monotonicity | Pass (invariant and closed-form suites) |
 | Closed forms | Daly optimal checkpoint interval; Meta expected-ETTR expression | Pass, within 10 percent and 5 percent respectively |
 | External measurement | Held-out prediction of a published configuration | Pass, 1.6 percent throughput error |
-| Cross-fidelity | Analytical against event-driven | Pass inside the declared envelope, 1.4 percent maximum |
+| Cross-fidelity | Analytical against event-driven | Pass, 0.02 percent maximum at every tested severity |
 
 Nothing in this project has been validated against hardware the author operated. Every result is analytical or simulated.
 
@@ -90,7 +90,7 @@ The cause was two misspecified inputs, not the model. The configuration assumed 
 
 An independent arithmetic check confirms the diagnosis. At the Daly optimum, combined checkpoint and lost-work overhead is approximately `sqrt(2 w / M)`. With a 60-second blocking write and a 2.34-hour job MTTF that is about 12 percent, so an ETTR above 90 percent is unreachable with fully blocking 60-second checkpoints at this scale regardless of any other parameter.
 
-The inputs were corrected to 3 percent spares and a 20-second blocking write, both marked `[derived]` with their justification in the configuration file. The throughput and interruption results are unaffected, because those quantities do not depend on either parameter.
+The inputs were corrected to 3 percent spares and a 20-second blocking write, both marked `[assumed]` with their textual basis in the configuration file, since neither value can be computed from published quantities. The throughput and interruption results are unaffected, because those quantities do not depend on either parameter.
 
 ### 3.4 Excluded comparison
 
@@ -98,16 +98,11 @@ The source's Table 4 contains a third row listing TP 8, CP 16, PP 16, DP 4 along
 
 ## 4. Cross-fidelity agreement
 
-The analytical renewal path and the event-driven Monte Carlo path share only the parameter dataclass. Compared across 16 configurations spanning 2,048 to 65,536 accelerators and failure rates from 1e-3 to 3e-2:
+The analytical renewal path and the event-driven Monte Carlo path share only the parameter dataclass. Compared across 16 configurations spanning 2,048 to 65,536 accelerators and failure rates from 1e-3 to 3e-2, the maximum relative disagreement in useful capacity is **0.02 percent**, at every tested severity including recovery pressures far beyond the scope guard.
 
-| Region | Configurations | Maximum relative error in useful capacity |
-|---|---|---|
-| Inside validity envelope | 13 | 1.4 percent |
-| Outside validity envelope | 3 | 29.6 percent |
+**History, reported rather than buried.** An earlier version of the event-driven path mis-attributed detection time (subtracting it from buckets it had never been added to, then rescaling all buckets to fit the window). That bug made the event-driven path appear to diverge from the analytical path by up to 29.6 percent at high severity, and the 0.25 recovery-pressure threshold was originally justified as a fidelity envelope on that basis. An independent code review found the error. With the accounting corrected, the two paths agree everywhere, and the threshold is retained as a **modeling-scope guard**: above it, a job spends more than a quarter of its runtime on discarded work and restart, which is outside the regime the model's independence assumptions were calibrated for and not a state an operator would leave uncorrected. See DECISIONS.md D14. The Monte Carlo path now asserts wall-clock conservation internally and raises rather than rescaling.
 
-The envelope is defined by **recovery pressure** below 0.25, where recovery pressure is the share of runtime consumed by discarded work plus restart. The threshold was set from this data and is pinned by a test that fails if the analytical path ever drifts more than 5 percent while still declaring itself valid.
-
-Out-of-envelope rows remain in the raw output with a flag and are excluded from headline claims. Where such a case is load-bearing it is recomputed with the event-driven path: the claim that no accelerator count matches an infrastructure improvement at approximately 131,000 accelerators was confirmed that way, with productive throughput falling from 29,682 to 25,016 as the pool grew by half again.
+Out-of-scope rows remain in the raw output with a flag and are excluded from headline claims. The 131,000-accelerator counterexample was computed with both implementations, which agree to 0.03 percent on it: productive throughput peaks 1.2 percent above the baseline pool and then declines, while halving the failure rate exceeds anything the scaling curve reaches.
 
 ## 5. Validated, extrapolated, and unsupported scope
 
@@ -123,10 +118,10 @@ Out-of-envelope rows remain in the raw output with a flag and are excluded from 
 |---|---|---|
 | Useful capacity fraction is far below ETTR, by 26 points at 16,384 accelerators | Validated inputs, derived output | Validated throughput and MTTF at this exact configuration; the gap follows from the definitions |
 | Productive share falls from 0.78 to 0.38 between 1,024 and 65,536 accelerators | Partly extrapolated | Validated at 8,192 and 16,384; the endpoints are extrapolation, and the 1,024 figure is optimistic per the small-job limitation |
-| The best marginal investment changes with regime; four different interventions win | Extrapolated | No published counterfactual exists. Robust across the uncertainty analysis, but this is a model result |
-| The informal equivalent-accelerator metric understates value by 1.4x to 6.2x | Extrapolated, but structural | Follows from the marginal productivity of an added accelerator, which is a property of the validated scaling behavior |
+| The best marginal investment changes with regime; three different interventions win | Extrapolated | No published counterfactual exists. Robust across the uncertainty analysis, but this is a model result |
+| The informal equivalent-accelerator metric understates value by 1.4x to 4.6x | Extrapolated, but structural | Follows from the marginal productivity of an added accelerator, which is a property of the validated scaling behavior |
 | Recovery interventions are complements, not substitutes | Extrapolated | Mechanism is explicable and consistent across regimes, but unmeasured |
-| Beyond roughly 131,000 accelerators no purchase matches an infrastructure improvement | Extrapolated, confirmed at high fidelity | Outside the fast path's envelope; recomputed with the event-driven path. Depends on the strong-scaling assumption |
+| Beyond roughly 131,000 accelerators no purchase matches an infrastructure improvement | Extrapolated | Outside the scope guard; computed with both implementations, which agree to 0.03 percent. Depends on the strong-scaling assumption |
 
 ## 7. What would change the conclusions
 

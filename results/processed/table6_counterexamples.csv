@@ -3,8 +3,8 @@ failslow_fleet,16384,0.418,425.4,970.5,False,True
 huge_batch,16384,0.684,217.1,877.8,False,True
 huge_job,131072,0.231,0.0,,True,False
 long_sequence,16384,0.643,197.7,957.1,False,True
-perfect_network,16384,0.642,0.0,954.3,False,True
-perfect_reliability,16384,0.704,385.7,0.0,False,True
+perfect_network,16384,0.642,46.7,954.3,False,True
+perfect_reliability,16384,0.704,385.7,18.2,False,True
 short_sequence,16384,0.591,1340.0,1029.3,False,True
 tiny_batch,16384,0.472,1358.7,1370.4,False,True
 tiny_job,1024,0.781,9.4,7.3,False,True

@@ -42,6 +42,13 @@ MAX_SCALE_FACTOR = 64.0  # widest pool multiple considered when solving for SEA
 class Intervention:
     """A named configuration change with an optional cost in accelerator units.
 
+    ``overrides`` set absolute target values ("deploy a system that detects in
+    20 s"). ``multipliers`` scale whatever value the baseline has ("halve the
+    failure rate"), so an intervention named 2x stays a 2x on every baseline it
+    is applied to, including the regime-shifted baselines of the decision maps.
+    An earlier version expressed relative interventions as absolute values,
+    which silently changed their strength across regimes; see DECISIONS.md D14.
+
     ``cost_accelerator_equivalents`` is a normalized cost: how many
     fully-loaded accelerators the intervention costs, for the same pool. Using a
     ratio avoids inventing absolute infrastructure prices. Leave it ``None`` when
@@ -51,11 +58,18 @@ class Intervention:
 
     name: str
     overrides: Dict[str, float] = field(default_factory=dict)
+    multipliers: Dict[str, float] = field(default_factory=dict)
     cost_accelerator_equivalents: Optional[float] = None
     description: str = ""
 
     def apply(self, scenario: ScenarioConfig) -> ScenarioConfig:
-        return replace_nested(scenario, **self.overrides)
+        combined: Dict[str, float] = dict(self.overrides)
+        for key, factor in self.multipliers.items():
+            section, attr = key.split(".", 1)
+            current = getattr(getattr(scenario, section), attr)
+            scaled = current * factor
+            combined[key] = int(round(scaled)) if isinstance(current, int) else scaled
+        return replace_nested(scenario, **combined)
 
 
 def rescale_pool(scenario: ScenarioConfig, n_pool_target: int) -> Optional[ScenarioConfig]:
@@ -86,7 +100,9 @@ def rescale_pool(scenario: ScenarioConfig, n_pool_target: int) -> Optional[Scena
         new_par = dataclasses.replace(
             new_par, global_batch_seqs=min(scaled, scenario.max_global_batch_seqs)
         )
-    # A pipeline schedule needs at least as many microbatches as stages.
+    # The schedule needs at least one microbatch per replica; with fewer
+    # microbatches than stages the pipeline still runs, at a larger bubble,
+    # which the bubble term prices.
     seqs_per_dp = new_par.global_batch_seqs / new_par.dp
     if seqs_per_dp / new_par.micro_batch < 1.0:
         return None
@@ -183,6 +199,15 @@ def substitution_equivalent_accelerators(
     """SEA of one intervention against a baseline, with supporting quantities."""
     base_ledger = build_ledger(baseline)
     treated = intervention.apply(baseline)
+    # An intervention that changes the spare or stranded fraction re-partitions
+    # the paid pool. Re-plan at the baseline's pool size so the comparison stays
+    # a fixed-budget one: more spares means fewer accelerators in the job.
+    base_oh = 1.0 + baseline.reliability.spare_fraction + baseline.reliability.stranded_fraction
+    new_oh = 1.0 + treated.reliability.spare_fraction + treated.reliability.stranded_fraction
+    if abs(new_oh - base_oh) > 1e-12:
+        replanned = rescale_pool(treated, baseline.n_pool)
+        if replanned is not None:
+            treated = replanned
     treated_ledger = build_ledger(treated)
 
     target = treated_ledger.productive_accelerators
@@ -222,14 +247,19 @@ def naive_equivalent_accelerators(
 
 
 def bundle_intervention(name: str, parts: Sequence[Intervention]) -> Intervention:
-    """Combine interventions into one by merging their overrides.
+    """Combine interventions into one by merging their overrides and multipliers.
 
-    Later entries win on conflicting keys, which is recorded rather than
-    silently resolved: conflicting bundles should be defined explicitly.
+    On conflicting absolute keys, later entries win silently, so bundles with
+    conflicting targets should be defined explicitly rather than composed.
+    Conflicting multipliers compose by multiplication, which is the natural
+    semantics for stacked relative improvements.
     """
     merged: Dict[str, float] = {}
+    merged_mult: Dict[str, float] = {}
     for part in parts:
         merged.update(part.overrides)
+        for key, factor in part.multipliers.items():
+            merged_mult[key] = merged_mult.get(key, 1.0) * factor
     cost = 0.0
     for part in parts:
         if part.cost_accelerator_equivalents is None:
@@ -239,6 +269,7 @@ def bundle_intervention(name: str, parts: Sequence[Intervention]) -> Interventio
     return Intervention(
         name=name,
         overrides=merged,
+        multipliers=merged_mult,
         cost_accelerator_equivalents=None if math.isnan(cost) else cost,
         description="bundle of: " + ", ".join(p.name for p in parts),
     )

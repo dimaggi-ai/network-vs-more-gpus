@@ -1,6 +1,6 @@
 winner,share_ranked_first_pct
-reliability_2x,52.3
-straggler_control,24.8
-fast_checkpoint,19.2
-fast_restart,3.1
+fast_checkpoint,45.8
+reliability_2x,29.1
+straggler_control,15.8
+fast_restart,8.7
 bandwidth_4x,0.6

@@ -43,11 +43,12 @@ effective-training-time ratio of 0.889 while converting 0.627 of purchased
 accelerator-seconds into productive work. Second, the informal practice of
 converting avoided idle time directly into an equivalent accelerator count
 understates an intervention's value by a factor of 1.4 at 2{,}048 accelerators
-rising to 6.2 at 65{,}536, because a marginal accelerator is not fully
-productive. Third, no single intervention dominates: across the regimes we
-examine, four different interventions rank first, and under parameter
-uncertainty at 16{,}384 accelerators additional bandwidth ranks first in 0.6\% of
-draws while halving the node failure rate ranks first in 52.3\%. The title's
+rising to 4.6 at 65{,}536, because a marginal accelerator is not fully
+productive. Third, no single intervention
+dominates: across the regimes we examine, three different interventions rank
+first, and under parameter uncertainty at 16{,}384 accelerators additional
+bandwidth ranks first in 0.6\% of draws while reliability and recovery
+improvements account for the other 99.4\%. The title's
 claim holds in identifiable regimes and fails in others, and we report both.
 All results are analytical or simulated; none is a hardware measurement.
 \end{abstract}
@@ -227,8 +228,9 @@ cost uses the Gaussian extreme-value approximation for the maximum of $N$ draws.
 Reliability is modeled twice, independently. An analytical path uses renewal
 expectations; an event-driven path walks the wall clock, places checkpoints,
 draws exponential failure times, and attributes each second as it goes. They
-share only the parameter definitions. Agreement between them defines the model's
-validity envelope (Section~\ref{sec:validation}).
+share only the parameter definitions. Their agreement is a
+validation requirement, and a recovery-pressure scope guard bounds the regime
+the model is applied to (Section~\ref{sec:validation}).
 
 \section{Validation}
 \label{sec:validation}
@@ -299,19 +301,25 @@ failure rather than only the corrected result.
 
 \subsection{Validity envelope}
 
-The analytical and event-driven paths agree closely over most of the parameter
-space and diverge where mean-time-to-failure approaches recovery time. We define
-\emph{recovery pressure} as the share of runtime consumed by discarded work plus
-restart. Below 0.25 the two paths agree within 1.4\% on UCF; above it they
-diverge to 29.6\% (Figure~\ref{fig:fidelity}). Rows above the threshold are
-flagged in the raw output and excluded from headline claims; where such a case
-is load-bearing we recompute it with the event-driven path.
+We define \emph{recovery pressure} as the share of runtime consumed by
+discarded work plus restart, and we exclude configurations above 0.25 from
+headline claims. The exclusion is a modeling-scope judgment, not a fidelity
+boundary: the two implementations agree to within 0.02\% on UCF at every tested
+severity, including far beyond the threshold (Figure~\ref{fig:fidelity}).
+Above it, a job would be spending more than a quarter of its life on discarded
+work and restart, which is outside the regime the model's independence
+assumptions were calibrated for and not a state any operator would leave
+uncorrected. An earlier version of the event-driven path mis-attributed
+detection time and appeared to diverge at high severity; an independent code
+review found the error, and the correction is recorded in the repository's
+decision log (D14) rather than silently absorbed.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.62\textwidth]{../figures/fig7_cross_fidelity.pdf}
-\caption{Cross-fidelity agreement. The fast path is trusted only where it claims
-to be valid, and the threshold is set from this data rather than assumed.}
+\caption{Cross-fidelity agreement. The two independent implementations agree
+to within 0.02\% at every tested severity; the 0.25 line is a modeling-scope
+guard, not an accuracy boundary.}
 \label{fig:fidelity}
 \end{figure}
 
@@ -374,8 +382,8 @@ substitution value.}
 \label{fig:bias}
 \end{figure}
 
-The informal metric equals 0.73 of SEA at 2{,}048 accelerators and 0.16 at
-65{,}536, understating intervention value by factors of 1.4 and 6.2 respectively.
+The informal metric equals 0.73 of SEA at 2{,}048 accelerators and 0.22 at
+65{,}536, understating intervention value by factors of 1.4 and 4.6 respectively.
 The bias is structural: the informal metric implicitly divides by a marginal
 productivity of 1, and the true marginal productivity falls with scale. It errs
 most severely exactly where the investment decision is largest.
@@ -384,7 +392,7 @@ most severely exactly where the investment decision is largest.
 
 Excluding cases where SEA is unbounded, bandwidth and topology improvements are
 substitutes as expected (mean additivity error $+6.5\%$), and a mixed network and
-reliability bundle likewise ($+7.5\%$). Recovery improvements are
+reliability bundle likewise ($+12.0\%$). Recovery improvements are
 \emph{complements} ($-8.9\%$): faster checkpointing shortens the optimal
 checkpoint interval, which shrinks the window of discarded work, which raises
 the value of faster detection and restart. This refutes the direction we
@@ -408,7 +416,11 @@ for planning. Enlarging the scale-up domain and adding spares are worth nothing
 in every regime shown, because neither relieves a binding constraint at this
 configuration. And the spread across regimes is wide: faster restart ranges from
 roughly 280 to 2{,}000 accelerators depending on the regime, so a single quoted
-value for such an intervention would be misleading.
+value for such an intervention would be misleading. One caveat applies to the
+zero-valued rows: the model holds the parallelism plan fixed, so it prices what
+a larger scale-up domain or a deeper spare pool does for \emph{this} plan. The
+real value of a larger scale-up domain lies in the parallelism plans it
+enables, which is outside this study's scope, so those zeros are lower bounds.
 
 \subsection{Decision boundaries}
 
@@ -416,19 +428,22 @@ value for such an intervention would be misleading.
 \centering
 \includegraphics[width=\textwidth]{../figures/fig3_decision_map.pdf}
 \caption{The intervention with the highest substitution value, over a
-failure-rate by oversubscription grid. Four different interventions rank first,
-and the winning set differs between the two scales. Blank cells fall outside the
-validity envelope.}
+failure-rate by oversubscription grid. Three different interventions rank first,
+and the winning mix differs between the two scales. Blank cells fall outside the
+scope guard.}
 \label{fig:decision}
 \end{figure}
 
-Figure~\ref{fig:decision} is the central result. Across 96 in-envelope cells,
-four different interventions rank first. At 16{,}384 accelerators the map divides
-between straggler control at lower failure rates and halving the failure rate at
-higher ones; additional bandwidth never wins. At 65{,}536 accelerators the
-picture changes: quadrupled bandwidth wins in the low-failure, heavily
-oversubscribed corner, faster restart wins a middle band, and the two
-16K-scale winners retain the remainder.
+Figure~\ref{fig:decision} is the central result. Across 96 in-scope cells,
+three different interventions rank first. At 16{,}384 accelerators the map
+divides evenly between straggler control at lower failure rates and halving the
+failure rate at higher ones; additional bandwidth never wins. At 65{,}536
+accelerators reliability dominates most of the map, quadrupled bandwidth takes
+the low-failure, heavily oversubscribed corner, and straggler control retains a
+low-failure fringe. Faster restart, which wins nowhere outright, is still worth
+hundreds to thousands of accelerators in absolute terms
+(Figure~\ref{fig:sea}); ranking first and being worth funding are different
+questions.
 
 \begin{figure}[t]
 \centering
@@ -439,21 +454,22 @@ oversubscribed corner, faster restart wins a middle band, and the two
 \end{figure}
 
 Point rankings are not decisions, so we recompute the ranking over draws from
-documented parameter ranges (Figure~\ref{fig:stability}). At 16{,}384
-accelerators, halving the failure rate ranks first in 52.3\% of draws, straggler
-control in 24.8\%, faster checkpointing in 19.2\%, faster restart in 3.1\%, and
-quadrupled bandwidth in 0.6\%.
+documented parameter ranges (Figure~\ref{fig:stability}). At 16{,}384 accelerators, cutting the blocking checkpoint cost to 5 seconds
+ranks first in 45.8\% of draws, halving the failure rate in 29.1\%, straggler
+control in 15.8\%, faster restart in 8.7\%, and quadrupled bandwidth in 0.6\%.
+The absolute-target interventions (deploying a specific checkpoint, detection,
+or restart capability) are strongest exactly where the drawn baseline is worst,
+which is the regime dependence the map displays.
 
 \section{Sensitivity and counterexamples}
 
 We sought negative cases deliberately.
 
-\paragraph{Where network investment is worth nothing.} With an already fast and
-flat network (3.2 Tb/s per accelerator, no oversubscription), every bandwidth
-and topology intervention has $\mathrm{SEA} = 0$ exactly, while halving the
-failure rate is worth 954 accelerators. The mirror case also holds: with
-near-perfect reliability, halving the failure rate is worth zero while doubling
-bandwidth is worth 255.
+\paragraph{Where network investment is worth nothing.} With an already fast and flat network (3.2 Tb/s per accelerator, no
+oversubscription), a further quadrupling of bandwidth is worth 47 accelerators,
+0.3\% of the pool, while halving the failure rate is worth 954. The mirror case
+also holds: with near-perfect reliability, halving the failure rate is worth 18
+accelerators while doubling bandwidth is worth 255.
 
 \paragraph{Where nothing much matters.} At 1{,}024 accelerators no
 intervention is worth more than 39 accelerators, because $\mathrm{UCF}$ is
@@ -465,13 +481,13 @@ tokens or the global batch to 512 sequences raises the value of doubled
 bandwidth to 871 and 882 accelerators respectively, because
 communication becomes a larger share of a smaller step.
 
-\paragraph{Where accelerators cannot substitute at all.} At approximately
-131{,}000 accelerators under this configuration, productive throughput
-\emph{decreases} as the pool grows: the event-driven path gives 29{,}682
-productive accelerators at the baseline pool, 28{,}234 at 1.5$\times$, and
-25{,}016 at 2$\times$, while halving the failure rate yields 38{,}075. No purchase
-matches the intervention. This case lies outside the fast path's validity
-envelope and was confirmed with the event-driven path.
+\paragraph{Where accelerators cannot substitute at all.} At approximately 131{,}000 accelerators under this configuration, buying more
+accelerators is nearly worthless and soon harmful: productive throughput rises
+1.2\% to a peak of 31{,}566 at 1.25$\times$ the baseline pool of 31{,}204, then
+falls to 29{,}628 at 2$\times$. Halving the failure rate yields 38{,}640, beyond
+anything the scaling curve reaches, so no purchase matches the intervention.
+This case lies outside the scope guard and was therefore computed with both
+implementations, which agree to 0.03\%.
 
 \section{Strategic implications}
 
@@ -484,7 +500,7 @@ argument lives.
 
 Second, express improvements as break-even accelerator counts rather than as
 recovered time. The conversion is not a formality: the informal version
-understates value by up to an order of magnitude at large scale, and it cannot
+understates value by a factor that reaches six at large scale, and it cannot
 express the regime where no purchase substitutes.
 
 Third, do not carry a single ranking across regimes. The best marginal
