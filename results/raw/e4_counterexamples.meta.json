@@ -1,0 +1,10 @@
+{
+  "experiment": "e4_counterexamples",
+  "netcap_version": "0.1.0",
+  "git_commit": "58718118939e54dc34440cf5f576240a98654712",
+  "seed": 20260805,
+  "baseline_scenario": "reference_405b_16k",
+  "baseline_digest": "87055490caa7ae6d",
+  "rows": 90,
+  "notes": "Negative cases: regimes where network investment does not pay, and regimes where accelerators cannot substitute for the intervention."
+}

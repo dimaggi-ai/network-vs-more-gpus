@@ -122,6 +122,29 @@ def test_analytical_matches_monte_carlo(n_acc):
     assert m.n_failures == pytest.approx(a.n_failures, rel=0.15)
 
 
+@pytest.mark.parametrize("n_acc", [2048, 8192, 16384, 65536])
+@pytest.mark.parametrize("rate", [1e-3, 5e-3, 1.5e-2, 3e-2])
+def test_fidelity_agreement_within_validity_envelope(n_acc, rate):
+    """Inside the declared envelope the fast path must track the exact path.
+
+    Outside it, the fast path is known to drift and the configuration is
+    excluded from headline results, so no accuracy claim is made. This test
+    pins the envelope: if the fast path ever drifts more than 5 percent while
+    still declaring itself valid, the envelope is wrong and must be retightened.
+    """
+    per_node = 8
+    spec = _spec(failure_rate_per_node_day=rate)
+    a = analytical_reliability(spec, n_acc, per_node, WINDOW)
+    if not a.within_validity_envelope:
+        pytest.skip(f"recovery pressure {a.recovery_pressure:.3f} is outside the envelope")
+    m = monte_carlo_reliability(spec, n_acc, per_node, WINDOW, seed=17, n_replicates=300)
+    rel_error = abs(m.running_s - a.running_s) / a.running_s
+    assert rel_error < 0.05, (
+        f"n={n_acc} rate={rate}: {rel_error:.3f} drift at recovery pressure "
+        f"{a.recovery_pressure:.3f}"
+    )
+
+
 def test_failure_free_cluster_is_fully_running():
     spec = _spec(failure_rate_per_node_day=0.0, checkpoint_write_s=0.0, spare_fraction=0.0)
     timing = analytical_reliability(spec, 1024, 8, WINDOW)

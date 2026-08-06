@@ -184,6 +184,8 @@ class CapacityLedger:
             "job_mttf_hours": self.timing.job_mttf_s / 3600.0,
             "checkpoint_interval_s": self.timing.checkpoint_interval_s,
             "n_failures": self.timing.n_failures,
+            "recovery_pressure": self.timing.recovery_pressure,
+            "within_validity_envelope": self.timing.within_validity_envelope,
         }
 
 

@@ -27,6 +27,12 @@ import numpy as np
 from .config import ReliabilitySpec, SECONDS_PER_DAY
 
 
+#: Above this recovery pressure the analytical path loses accuracy against the
+#: event-driven path. Established empirically in experiment E8 and enforced by
+#: ``tests/test_reliability.py::test_fidelity_agreement_within_validity_envelope``.
+VALIDITY_RECOVERY_PRESSURE = 0.25
+
+
 @dataclass(frozen=True)
 class ReliabilityTiming:
     """Wall-clock time per accelerator, in seconds, over the measurement window."""
@@ -39,6 +45,27 @@ class ReliabilityTiming:
     n_failures: float
     checkpoint_interval_s: float
     job_mttf_s: float
+
+    @property
+    def recovery_pressure(self) -> float:
+        """Recovery time per failure divided by mean time to failure.
+
+        The dimensionless parameter that governs how far the renewal
+        approximation drifts from the exact timeline. Below
+        :data:`VALIDITY_RECOVERY_PRESSURE` the two agree to within a few percent;
+        above it the job spends a large share of its life recovering and the
+        linearized decomposition breaks down. Configurations above the threshold
+        are excluded from headline results rather than reported with a caveat.
+        """
+        if not math.isfinite(self.job_mttf_s) or self.job_mttf_s <= 0:
+            return 0.0
+        return (self.discarded_s + self.restart_blocked_s) / max(
+            1e-9, self.discarded_s + self.restart_blocked_s + self.running_s
+        )
+
+    @property
+    def within_validity_envelope(self) -> bool:
+        return self.recovery_pressure < VALIDITY_RECOVERY_PRESSURE
 
 
 def daly_optimal_interval(checkpoint_write_s: float, mttf_s: float) -> float:

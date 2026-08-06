@@ -1,0 +1,85 @@
+# Infrastructure interventions compared against buying more accelerators.
+#
+# Each intervention is a change to the study baseline. Costs are deliberately
+# left unspecified: the model's output is the break-even cost in accelerator
+# equivalents, so an operator can compare it against their own prices without
+# this project inventing capital costs it cannot source. Cost sensitivity is
+# handled in experiment E7 by sweeping a cost ratio rather than assuming one.
+
+interventions:
+  - name: bandwidth_2x
+    description: Double per-accelerator scale-out bandwidth, 400 to 800 Gbps
+    overrides:
+      accelerator.nic_bw_gbps: 800.0
+
+  - name: bandwidth_4x
+    description: Quadruple per-accelerator scale-out bandwidth, 400 to 1600 Gbps
+    overrides:
+      accelerator.nic_bw_gbps: 1600.0
+
+  - name: flat_fabric
+    description: Remove cross-pod oversubscription, 1:7 to 1:1
+    overrides:
+      topology.oversubscription: 1.0
+
+  - name: scaleup_2x
+    description: Double the scale-up domain, 8 to 16 accelerators
+    overrides:
+      topology.scaleup_domain: 16
+
+  - name: reliability_2x
+    description: Halve the node failure rate through hardware and firmware work
+    overrides:
+      reliability.failure_rate_per_node_day: 0.0025
+
+  - name: fast_detection
+    description: Cut failure detection from 120 s to 20 s with finer telemetry
+    overrides:
+      reliability.detect_time_s: 20.0
+
+  - name: fast_restart
+    description: Cut restart and reinitialization from 300 s to 60 s
+    overrides:
+      reliability.restart_time_s: 60.0
+
+  - name: fast_checkpoint
+    description: Cut blocking checkpoint write from 20 s to 5 s with faster storage
+    overrides:
+      reliability.checkpoint_write_s: 5.0
+
+  - name: add_spares
+    description: Hold 5 percent of the pool as hot spares instead of 3 percent
+    overrides:
+      reliability.spare_fraction: 0.05
+
+  - name: straggler_control
+    description: Halve per-rank timing jitter through placement and tuning
+    overrides:
+      reliability.straggler_cv: 0.01
+
+# Regimes used for the decision maps. Each is a named point in operating space,
+# not a prediction about any specific operator.
+regimes:
+  - name: reliable_flat
+    description: Low failure rate, no oversubscription
+    overrides:
+      reliability.failure_rate_per_node_day: 0.0025
+      topology.oversubscription: 1.0
+  - name: reliable_oversubscribed
+    description: Low failure rate, 1:7 oversubscribed spine
+    overrides:
+      reliability.failure_rate_per_node_day: 0.0025
+      topology.oversubscription: 7.0
+  - name: typical
+    description: Study baseline
+    overrides: {}
+  - name: unreliable_flat
+    description: High failure rate, no oversubscription
+    overrides:
+      reliability.failure_rate_per_node_day: 0.015
+      topology.oversubscription: 1.0
+  - name: unreliable_oversubscribed
+    description: High failure rate, 1:7 oversubscribed spine
+    overrides:
+      reliability.failure_rate_per_node_day: 0.015
+      topology.oversubscription: 7.0

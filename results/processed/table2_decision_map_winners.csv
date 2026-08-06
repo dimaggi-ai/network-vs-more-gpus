@@ -1,0 +1,7 @@
+n_accelerators,winner,cells
+16384,reliability_2x,24
+16384,straggler_control,36
+65536,bandwidth_4x,10
+65536,fast_restart,11
+65536,reliability_2x,6
+65536,straggler_control,9

@@ -1,0 +1,10 @@
+,n_accelerators,baseline_ucf,max_network_sea,max_reliability_sea,any_unattainable_by_scaling,within_validity_envelope
+huge_batch,16384,0.684,232.2,936.2,False,True
+huge_job,131072,0.231,0.0,,True,False
+long_sequence,16384,0.643,221.7,1065.6,False,True
+perfect_network,16384,0.642,0.0,1060.8,False,True
+perfect_reliability,16384,0.704,413.2,0.0,False,True
+short_sequence,16384,0.591,1541.0,1188.4,False,True
+tiny_batch,16384,0.472,1730.5,1744.7,False,True
+tiny_job,1024,0.781,9.5,7.4,False,True
+weak_scaling,16384,0.627,391.1,887.0,False,True
