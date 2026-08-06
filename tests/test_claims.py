@@ -45,17 +45,17 @@ def test_rank_reversals_exist(s):
 
 def test_informal_metric_bias(s):
     f = s["naive_metric_understatement_factor"]
-    assert f["2048"] == pytest.approx(1.39, abs=0.02)
-    assert f["65536"] == pytest.approx(9.86, abs=0.05)
+    assert f["2048"] == pytest.approx(1.36, abs=0.02)
+    assert f["65536"] == pytest.approx(6.24, abs=0.05)
     assert f["2048"] < f["65536"], "bias must grow with scale"
 
 
 def test_recovery_interventions_are_complements(s):
     """Refutes hypothesis H3's stated direction; reported as a null result."""
     by = s["additivity"]["by_bundle"]
-    assert by["recovery_trio"]["mean_error"] == pytest.approx(-0.041, abs=0.002)
+    assert by["recovery_trio"]["mean_error"] == pytest.approx(-0.089, abs=0.002)
     assert by["recovery_trio"]["max"] < 0, "recovery bundle must be superadditive"
-    assert by["network_pair"]["mean_error"] == pytest.approx(0.069, abs=0.002)
+    assert by["network_pair"]["mean_error"] == pytest.approx(0.065, abs=0.002)
 
 
 def test_rank_stability(s):
@@ -86,7 +86,7 @@ def test_counterexamples(s):
     """The cases where this project's own thesis fails."""
     c = s["counterexamples"]
     assert c["perfect_network"]["max_network_sea"] == 0.0
-    assert c["perfect_network"]["max_reliability_sea"] == pytest.approx(1060.8, abs=1.0)
+    assert c["perfect_network"]["max_reliability_sea"] == pytest.approx(954.3, abs=1.0)
     assert c["huge_job"]["any_unattainable_by_scaling"] is True
     assert c["huge_job"]["within_validity_envelope"] is False
     assert c["tiny_job"]["baseline_ucf"] == pytest.approx(0.781, abs=5e-4)

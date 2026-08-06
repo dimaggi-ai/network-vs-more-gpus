@@ -58,7 +58,7 @@ def test_rescale_preserves_shape_parallelism(base):
 
 
 def test_scaling_curve_starts_at_baseline(base):
-    curve = scaling_curve(base, max_factor=4.0, points=12)
+    curve = scaling_curve(base, max_factor=4.0)
     assert curve
     assert curve[0][0] == pytest.approx(base.n_pool, rel=0.02)
     assert all(n2 >= n1 for (n1, _), (n2, _) in zip(curve, curve[1:]))
@@ -70,7 +70,7 @@ def test_strong_scaling_has_diminishing_returns(base):
     This is the mechanism that makes the substitution metric meaningful: if
     scaling were perfect, every intervention's SEA would equal its naive value.
     """
-    curve = dict(scaling_curve(base, max_factor=4.0, points=24))
+    curve = dict(scaling_curve(base, max_factor=4.0))
     sizes = sorted(curve)
     base_n, base_v = sizes[0], curve[sizes[0]]
     doubled = [n for n in sizes if n >= 2 * base_n]

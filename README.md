@@ -31,10 +31,10 @@ What could be done instead was validation against published measurements: one co
 |---|---|---|
 | Availability overstates capacity | ETTR 0.889 against useful capacity 0.627 at 16,384 accelerators, a 26.1 point gap | The reference configuration; the gap follows from the metric definitions |
 | Useful capacity collapses with scale at fixed batch | Productive share falls from 0.781 at 1,024 accelerators to 0.382 at 65,536 | Strong scaling; validated at 8,192 and 16,384 |
-| The informal equivalent-GPU metric is badly biased | Understates value by 1.4x at 2,048 accelerators, 9.9x at 65,536 | Structural, follows from marginal accelerator productivity |
+| The informal equivalent-GPU metric is badly biased | Understates value by 1.4x at 2,048 accelerators, 6.2x at 65,536 | Structural, follows from marginal accelerator productivity |
 | No single intervention dominates | Four different interventions rank first across 96 in-envelope regime cells | Failure rate by oversubscription grid at two scales |
 | Bandwidth is rarely the best marginal buy at 16K scale | Ranks first in 0.6% of 323 uncertainty draws; halving the failure rate ranks first in 52.3% | 16,384 accelerators, documented parameter ranges |
-| Recovery improvements are complements, not substitutes | Bundle worth 4.1% more than the sum of parts, against a hypothesis that predicted the opposite | All regimes tested |
+| Recovery improvements are complements, not substitutes | Bundle worth 8.9% more than the sum of parts, against a hypothesis that predicted the opposite | All regimes tested |
 | Beyond a point, accelerators cannot substitute at all | At ~131,000 accelerators productive throughput falls as the pool grows: 29,682 to 25,016 | Confirmed with the high-fidelity path; outside the fast path's envelope |
 
 ## What remains unvalidated
@@ -85,7 +85,7 @@ The full program runs in about **10 seconds** on a laptop. No accelerator access
 | ![Decision map](figures/fig3_decision_map.png) | ![Break-even costs](figures/fig4_sea_by_regime.png) |
 | **The decision map.** Four different interventions rank first depending on regime and scale. | **Break-even costs.** How much each intervention may cost, in accelerators, before it stops paying. |
 | ![Informal metric bias](figures/fig5_naive_bias.png) | ![Rank stability](figures/fig6_rank_stability.png) |
-| **The informal equivalent-GPU metric** understates value by up to 9.9x, worsening with scale. | **Rank stability** over 323 draws from documented parameter ranges. |
+| **The informal equivalent-GPU metric** understates value by up to 6.2x, worsening with scale. | **Rank stability** over 323 draws from documented parameter ranges. |
 
 ## Configuration example
 
@@ -120,7 +120,7 @@ print(ledger.effective_training_time_ratio)     # 0.889
 result = substitution_equivalent_accelerators(
     scenario, Intervention("bandwidth_2x", {"accelerator.nic_bw_gbps": 800.0})
 )
-print(result["sea"])   # 318: worth funding if it costs less than 318 accelerators
+print(result["sea"])   # 281: worth funding if it costs less than 281 accelerators
 ```
 
 ## Data provenance
@@ -158,7 +158,8 @@ See [`CITATION.cff`](CITATION.cff), or:
             and decision boundaries for infrastructure investment in large-scale
             AI training},
   year   = {2026},
-  note   = {Version 0.1.0}
+  url    = {https://github.com/dimaggi-ai/network-vs-more-gpus},
+  note   = {Version 1.0.0}
 }
 ```
 

@@ -29,7 +29,7 @@ The identity closes exactly, and the model asserts it on every evaluation.
 
 Two conventions do the real work. First, a second is classified by what eventually happened to it, not by what the accelerator was doing. A second spent computing inside a window that was later thrown away is discarded, not productive. Second, re-execution is counted once: after a restart, the original attempt is discarded and the repeat is ordinary work. Charging both is the single most common error in informal goodput arithmetic, and it is why casual estimates of "time lost to failures" tend to be too large.
 
-Applied to a 16,384-accelerator reference configuration training a 405B dense model, the split is 62.7% productive, 23.5% blocked, 4.5% discarded, 2.9% unavailable. The same configuration reports an ETTR of 0.889. Neither number is wrong. They measure different things, and only one of them is what you bought.
+Applied to a 16,384-accelerator reference configuration training a 405B dense model, the split is 62.7% productive, 29.9% blocked, 4.5% discarded, 2.9% unavailable. The same configuration reports an ETTR of 0.889. Neither number is wrong. They measure different things, and only one of them is what you bought.
 
 ## What "worth N GPUs" should mean
 
@@ -39,9 +39,9 @@ That arithmetic quietly assumes a purchased accelerator is fully productive. It 
 
 So I defined the comparison the other way around. **Substitution-Equivalent Accelerators** is the number of accelerators you would have to buy, at your current configuration, to get the same productive throughput the improvement gives you. You solve for the accelerator count that matches, rather than asserting an equivalence.
 
-At the reference baseline, a marginal accelerator contributes 0.444 productive accelerator-seconds per accelerator-second purchased. So an improvement worth 141 productive accelerators is worth 318 purchased ones. The informal method would have told you 141.
+At the reference baseline, a marginal accelerator contributes 0.502 productive accelerator-seconds per accelerator-second purchased. So an improvement worth 141 productive accelerators is worth 281 purchased ones. The informal method would have told you 141.
 
-That gap widens fast. The informal figure is 72% of the true substitution value at 2,048 accelerators and 10% at 65,536. It understates the case for infrastructure work by 1.4x at small scale and by nearly 10x at large scale, which is exactly backwards from where you want your estimate to be reliable.
+That gap widens fast. The informal figure is 73% of the true substitution value at 2,048 accelerators and 16% at 65,536. It understates the case for infrastructure work by 1.4x at small scale and by more than 6x at large scale, which is exactly backwards from where you want your estimate to be reliable.
 
 There is a practical benefit to defining it this way. Substitution-Equivalent Accelerators **is** a break-even cost. If an intervention costs less than that many fully-loaded accelerators, fund it. The rule needs a ratio, not a price, which is why this project quotes no dollar figures anywhere. I do not know your capital costs, and inventing them would have added precision without accuracy.
 
@@ -63,19 +63,19 @@ I started this project with a thesis that network capacity is compute capacity. 
 
 It holds in specific, identifiable places, and they are worth knowing.
 
-**When communication is a large share of a small step.** Shorten the sequence length to 2,048 tokens or the global batch to 512 sequences, and doubling bandwidth becomes worth over 1,000 accelerators, because communication now dominates a step that has less compute in it.
+**When communication is a large share of a small step.** Shorten the sequence length to 2,048 tokens or the global batch to 512 sequences, and doubling bandwidth becomes worth roughly 900 accelerators, because communication now dominates a step that has less compute in it.
 
 **At the largest scales with an oversubscribed spine.** This is the corner where bandwidth wins outright at 65,536 accelerators.
 
 **When nothing can be bought instead.** At roughly 131,000 accelerators under this configuration, productive throughput actually *decreases* as the pool grows: 29,682 productive accelerators at the baseline, 28,234 at 1.5x the pool, 25,016 at 2x. Meanwhile halving the failure rate takes it to 38,075. There is no accelerator purchase that matches the infrastructure improvement, because purchases at that point make things worse. This is the strongest form of the thesis, and it is confined to a regime most operators are not in.
 
-Equally worth knowing is where it clearly fails. Give the model an already-fast, already-flat network and every bandwidth and topology intervention is worth exactly zero, while halving the failure rate is worth 1,061 accelerators. Run a 1,024-accelerator job and nothing is worth much, because 78% of that pool is already productive. Small jobs do not justify infrastructure investment on capacity grounds.
+Equally worth knowing is where it clearly fails. Give the model an already-fast, already-flat network and every bandwidth and topology intervention is worth exactly zero, while halving the failure rate is worth 954 accelerators. Run a 1,024-accelerator job and nothing is worth much, because 78% of that pool is already productive. Small jobs do not justify infrastructure investment on capacity grounds.
 
 ## One result that surprised me
 
 I expected these interventions to be substitutes: fix one bottleneck and the others matter less. For network work that held. Bandwidth and topology together are worth about 7% less than the sum of their parts.
 
-Recovery work behaves the opposite way. Faster detection, faster restart, and cheaper checkpoints together are worth about 4% **more** than the sum of their parts. The mechanism is straightforward once you see it: cheaper checkpoints shorten the optimal checkpoint interval, a shorter interval shrinks the window of work you throw away on failure, and a smaller discarded window makes fast detection and fast restart more valuable. They compound.
+Recovery work behaves the opposite way. Faster detection, faster restart, and cheaper checkpoints together are worth about 9% **more** than the sum of their parts. The mechanism is straightforward once you see it: cheaper checkpoints shorten the optimal checkpoint interval, a shorter interval shrinks the window of work you throw away on failure, and a smaller discarded window makes fast detection and fast restart more valuable. They compound.
 
 The practical version: recovery improvements should be funded as a program, not ranked against each other as competing line items.
 
@@ -95,7 +95,7 @@ Beyond that: the failure process assumes independent per-node failures, so corre
 
 **Measure capacity against what you purchased.** A fleet at 89% effective training time may be turning 63% of its purchased accelerator-seconds into progress. Both are real numbers and only one of them is the budget conversation.
 
-**Ask for break-even costs, not recovered time.** "This is worth up to 1,088 accelerators in our current regime" is a fundable statement. "This recovers 480 GPU-equivalents" is usually an understatement by a factor that grows with your cluster.
+**Ask for break-even costs, not recovered time.** "This is worth up to 971 accelerators in our current regime" is a fundable statement. "This recovers 480 GPU-equivalents" is usually an understatement by a factor that grows with your cluster.
 
 **Distrust any single ranking.** The best marginal investment at 16,384 accelerators with reliable nodes is not the best at 65,536 with an oversubscribed spine. Anyone offering a universal ordering of infrastructure investments, including me at the start of this project, has not checked the regimes.
 
@@ -103,5 +103,5 @@ Beyond that: the failure process assumes independent per-node failures, so corre
 
 The paper, the model, the configurations, and every raw result are in the repository. The full experiment program runs in about ten seconds on a laptop and needs no accelerator access; `make reproduce` regenerates every number and figure. Raw results are immutable and carry provenance records, and every validation threshold was fixed before the corresponding comparison was run.
 
-*Repository: (link to be added at publication)*
-*Paper: (link to be added at publication)*
+*Repository: https://github.com/dimaggi-ai/network-vs-more-gpus*
+*Paper: https://github.com/dimaggi-ai/network-vs-more-gpus/blob/main/paper/main.pdf*

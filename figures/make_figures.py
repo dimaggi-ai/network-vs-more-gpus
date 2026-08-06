@@ -23,7 +23,6 @@ from style import (  # noqa: E402
     INK,
     INK_MUTED,
     INK_SECONDARY,
-    SEQUENTIAL,
     SERIES,
     SERIES_EXT,
     apply_style,

@@ -29,7 +29,7 @@ Consequence: the communication and reliability formulations are deliberately tex
 
 The supplied "equivalent accelerators recovered" divides avoided idle and repeated accelerator-seconds by the measurement period. That is only an accelerator count if a marginal accelerator is fully productive, which contradicts the project's own premise, and it cannot represent regimes where no purchase matches the intervention.
 
-Replaced by Substitution-Equivalent Accelerators, defined by solving for the accelerator count that delivers equal productive throughput. The supplied metric is retained and computed solely so its bias can be measured. It understates value by 1.4x at 2,048 accelerators and 9.9x at 65,536.
+Replaced by Substitution-Equivalent Accelerators, defined by solving for the accelerator count that delivers equal productive throughput. The supplied metric is retained and computed solely so its bias can be measured. It understates value by 1.4x at 2,048 accelerators and 6.2x at 65,536 (figures restated after D13 corrected the solver sampling).
 
 ---
 
@@ -90,7 +90,7 @@ Rather than report the corner with a caveat or quietly drop it, a dimensionless 
 ## D10. Report a refuted hypothesis rather than restating it
 **Date:** 2026-08-05. **Phase:** 7.
 
-Hypothesis H3 predicted that interventions are substitutes. Network interventions are (mean additivity error +6.9 percent), but recovery interventions are complements (-4.1 percent): faster checkpointing shortens the optimal interval, which shrinks the discarded window, which raises the value of faster detection and restart. The hypothesis is recorded as partially refuted in the charter and the mechanism is reported in the paper.
+Hypothesis H3 predicted that interventions are substitutes. Network interventions are (mean additivity error +6.5 percent), but recovery interventions are complements (-8.9 percent; figures restated after D13): faster checkpointing shortens the optimal interval, which shrinks the discarded window, which raises the value of faster detection and restart. The hypothesis is recorded as partially refuted in the charter and the mechanism is reported in the paper.
 
 ---
 
@@ -109,3 +109,24 @@ The validator's computations were ported to `figures/palette_check.py` and verif
 The supplied title asserts that network capacity is compute capacity. The results do not support it as a general claim. At 16,384 accelerators under parameter uncertainty, bandwidth ranks first in 0.6 percent of draws; reliability ranks first in 52.3 percent. Bandwidth does win at 65,536 accelerators in low-failure, heavily-oversubscribed regimes.
 
 The working title now states the qualified version. Recording this explicitly because the mandate requires that the title not be forced to confirm itself.
+
+---
+
+## D13. Densify the scaling-curve sampling near the baseline
+**Date:** 2026-08-05. **Phase:** 10 quality pass.
+
+The substitution solver interpolated the throughput-versus-pool curve across a
+uniform grid whose first step was 84 data-parallel replicas (about 11,000
+accelerators). The curve is concave, so interpolating across that chord
+understated the marginal productivity of the next accelerator (0.444 as a chord
+against 0.502 measured one replica out) and inflated every near-field SEA value
+by roughly 13 percent.
+
+Fixed by sampling the first sixteen data-parallel steps densely and growing
+geometrically beyond. Effects: small SEA values fell (doubling bandwidth at the
+16K baseline: 318 to 281), the informal-metric understatement factor at 65,536
+accelerators fell from 9.9x to 6.2x, and recovery complementarity strengthened
+from -4.1 to -8.9 percent. The decision map, the rank-stability shares, the
+capacity ledger, and every validation result were unchanged, which is itself a
+useful robustness observation: the sampling bias shifted magnitudes, not
+comparisons. All quoted numbers were regenerated and the claims test updated.

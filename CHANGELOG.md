@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.1.0 (2026-08-05)
+## 1.0.0 (2026-08-05)
 
-First complete research artifact. Not yet published.
+First public release.
 
 ### Model
 - Four-fate accelerator-time accounting with numerically enforced closure.

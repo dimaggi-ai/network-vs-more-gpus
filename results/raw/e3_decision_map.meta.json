@@ -1,7 +1,7 @@
 {
   "experiment": "e3_decision_map",
-  "netcap_version": "0.1.0",
-  "git_commit": "62fdaaa4bc145c9ddc95782e1742aefae6fd8400",
+  "netcap_version": "1.0.0",
+  "git_commit": "ea314119a87645fbd09675d6d71cb707aa3fc94f",
   "seed": 20260805,
   "baseline_scenario": "reference_405b_16k",
   "baseline_digest": "87055490caa7ae6d",

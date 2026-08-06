@@ -141,8 +141,11 @@ def allreduce_time(
     )
     chunk = size_bytes / lowest.group_size
     for tier in tiers[1:]:
+        # Every higher tier all-reduces the same reduced chunk. With more than
+        # two tiers this is conservative (a further reduce-scatter would shrink
+        # the chunk again); no configuration in this study exercises three
+        # tiers in one collective group.
         total += ring_allreduce_time(chunk, tier.group_size, tier.bw_bytes_per_s, tier.alpha_s)
-        chunk = chunk  # higher tiers all-reduce the same chunk size
     total += ring_allgather_time(
         size_bytes, lowest.group_size, lowest.bw_bytes_per_s, lowest.alpha_s
     )

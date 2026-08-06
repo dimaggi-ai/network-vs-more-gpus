@@ -56,7 +56,7 @@ Properties that matter:
 * **It can be unbounded.** Where `Pi(N, c0)` never reaches the target, SEA is infinite: the improvement cannot be bought with accelerators at any quantity. This is reported as an outcome, not an error.
 * **It requires no prices.** SEA *is* the break-even cost. An intervention is worth funding when it costs less than SEA fully-loaded accelerators. Because the decision rule needs only a ratio, the project never invents absolute infrastructure prices.
 
-Practically, SEA equals the productive gain divided by the marginal productivity of an added accelerator. At the study baseline that marginal productivity is 0.444, so a gain of 141 productive accelerators from doubling bandwidth is worth 318 accelerators of purchase.
+Practically, SEA equals the productive gain divided by the marginal productivity of an added accelerator. At the study baseline that marginal productivity is 0.502, so a gain of 141 productive accelerators from doubling bandwidth is worth 281 accelerators of purchase.
 
 ## 5. Why the supplied metric was replaced
 
@@ -72,7 +72,7 @@ It was rejected as a decision metric for three reasons, and retained only as a c
 2. **It ignores the cost of growth.** It cannot represent the fact that adding accelerators makes communication and failures worse.
 3. **It cannot express unattainability.** It always returns a finite number, including in regimes where no purchase can match the intervention.
 
-The measured consequence: the informal figure is 0.72 of SEA at 2,048 accelerators and 0.10 at 65,536. It understates intervention value by 1.4x at small scale and 9.9x at large scale, and the bias grows precisely where the decision matters most.
+The measured consequence: the informal figure is 0.73 of SEA at 2,048 accelerators and 0.16 at 65,536. It understates intervention value by 1.4x at small scale and 6.2x at large scale, and the bias grows precisely where the decision matters most.
 
 ## 6. Attribution when interventions interact
 
@@ -82,9 +82,9 @@ The measured non-additivity, excluding cases where SEA is unbounded:
 
 | Bundle | Mean additivity error | Interpretation |
 |---|---|---|
-| Bandwidth plus flat fabric | +6.9 percent | Substitutes, as expected |
-| Detection plus restart plus checkpoint | -4.1 percent | **Complements**, contrary to the stated hypothesis |
-| Mixed network and reliability | +10.5 percent | Substitutes |
+| Bandwidth plus flat fabric | +6.5 percent | Substitutes, as expected |
+| Detection plus restart plus checkpoint | -8.9 percent | **Complements**, contrary to the stated hypothesis |
+| Mixed network and reliability | +7.5 percent | Substitutes |
 
 Recovery improvements compound: faster checkpointing shortens the optimal checkpoint interval, which shrinks the window of discarded work, which makes faster detection and restart worth more. Reported as a refutation of hypothesis H3's stated direction.
 

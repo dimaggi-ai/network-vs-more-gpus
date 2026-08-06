@@ -105,13 +105,19 @@ def throughput(scenario: ScenarioConfig, **ledger_kwargs) -> float:
 
 
 def scaling_curve(
-    scenario: ScenarioConfig, max_factor: float = MAX_SCALE_FACTOR, points: int = 96
+    scenario: ScenarioConfig, max_factor: float = MAX_SCALE_FACTOR
 ) -> List[Tuple[int, float]]:
     """Realizable (pool size, productive accelerators) pairs for a configuration.
 
-    Only pool sizes that admit a valid data-parallel factorization appear, so the
-    curve is a step function in pool size; :func:`solve_sea` interpolates between
-    adjacent realizable points.
+    Only pool sizes that admit a valid data-parallel factorization appear;
+    :func:`solve_sea` interpolates between adjacent realizable points.
+
+    Sampling is dense for the first sixteen data-parallel steps and geometric
+    (7 percent growth) beyond. Small SEA values are resolved by interpolating
+    between *adjacent* realizable configurations, so the near-field marginal is
+    exact rather than a chord across a coarse grid. A uniform coarse grid was
+    found to overstate small SEA values by roughly 13 percent because the
+    throughput curve is concave; see DECISIONS.md D13.
     """
     par = scenario.parallelism
     unit = par.tp * par.pp * par.cp
@@ -119,18 +125,16 @@ def scaling_curve(
     base_dp = par.dp
     max_dp = max(base_dp + 1, int(base_dp * max_factor))
 
-    dps: List[int] = []
-    if max_dp <= points:
-        dps = list(range(base_dp, max_dp + 1))
-    else:
-        step = max(1, (max_dp - base_dp) // points)
-        dps = list(range(base_dp, max_dp + 1, step))
-        if dps[-1] != max_dp:
-            dps.append(max_dp)
+    dps = set(range(base_dp, min(base_dp + 16, max_dp) + 1))
+    dp = float(max(dps))
+    while dp < max_dp:
+        dp *= 1.07
+        dps.add(min(int(round(dp)), max_dp))
+    dps.add(max_dp)
 
     curve: List[Tuple[int, float]] = []
-    for dp in dps:
-        pool = int(math.ceil(dp * unit * overhead))
+    for dp_i in sorted(dps):
+        pool = int(math.ceil(dp_i * unit * overhead))
         variant = rescale_pool(scenario, pool)
         if variant is None:
             continue

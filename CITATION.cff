@@ -11,9 +11,10 @@ abstract: >-
 authors:
   - family-names: Nanyonga
     given-names: Margaret
-version: 0.1.0
+version: 1.0.0
 date-released: "2026-08-05"
 license: MIT
+repository-code: "https://github.com/dimaggi-ai/network-vs-more-gpus"
 keywords:
   - distributed training
   - capacity planning

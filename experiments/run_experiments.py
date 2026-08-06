@@ -241,6 +241,14 @@ def exp_e4_counterexamples(base: ScenarioConfig) -> None:
         ),
         ("perfect_reliability", 16384, {"reliability.failure_rate_per_node_day": 1e-5}),
         ("huge_job", 131072, {}),
+        (
+            "failslow_fleet",
+            16384,
+            {
+                "reliability.failslow_prob_per_node": 0.01,
+                "reliability.failslow_slowdown": 1.5,
+            },
+        ),
         ("tiny_batch", 16384, {"parallelism.global_batch_seqs": 512}),
         ("huge_batch", 16384, {"parallelism.global_batch_seqs": 8192}),
     ]
@@ -310,7 +318,6 @@ def exp_e5_naive_bias(base: ScenarioConfig) -> None:
                         "baseline_ucf": base_ledger.useful_capacity_fraction,
                         "ettr_times_step_efficiency": base_ledger.effective_training_time_ratio
                         * base_ledger.step.step_efficiency,
-                        "marginal_productivity": base_ledger.useful_capacity_fraction,
                         "recovery_pressure": base_ledger.timing.recovery_pressure,
                         "within_validity_envelope": base_ledger.timing.within_validity_envelope,
                     }
@@ -468,7 +475,7 @@ def exp_e9_scaling_curves(base: ScenarioConfig) -> None:
             cfg = at_scale(cfg, 4096)
             if cfg is None:
                 continue
-            for pool, productive in scaling_curve(cfg, max_factor=32.0, points=40):
+            for pool, productive in scaling_curve(cfg, max_factor=32.0):
                 rows.append(
                     {
                         "oversubscription": sigma,

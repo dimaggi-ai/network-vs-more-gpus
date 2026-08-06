@@ -43,7 +43,7 @@ effective-training-time ratio of 0.889 while converting 0.627 of purchased
 accelerator-seconds into productive work. Second, the informal practice of
 converting avoided idle time directly into an equivalent accelerator count
 understates an intervention's value by a factor of 1.4 at 2{,}048 accelerators
-rising to 9.9 at 65{,}536, because a marginal accelerator is not fully
+rising to 6.2 at 65{,}536, because a marginal accelerator is not fully
 productive. Third, no single intervention dominates: across the regimes we
 examine, four different interventions rank first, and under parameter
 uncertainty at 16{,}384 accelerators additional bandwidth ranks first in 0.6\% of
@@ -357,10 +357,10 @@ high failure rates, below it.}
 \label{fig:scaling}
 \end{figure}
 
-At the reference baseline the marginal accelerator contributes 0.444 productive
+At the reference baseline the marginal accelerator contributes 0.502 productive
 accelerator-seconds per accelerator-second purchased. This single number drives
 the substitution metric: an intervention worth 141 productive accelerators is
-worth 318 purchased ones. Notably the four oversubscription curves in
+worth 281 purchased ones. Notably the four oversubscription curves in
 Figure~\ref{fig:scaling} nearly coincide, meaning that at this configuration the
 spine is not what limits scaling, a second qualification of the title.
 
@@ -374,8 +374,8 @@ substitution value.}
 \label{fig:bias}
 \end{figure}
 
-The informal metric equals 0.72 of SEA at 2{,}048 accelerators and 0.10 at
-65{,}536, understating intervention value by factors of 1.4 and 9.9 respectively.
+The informal metric equals 0.73 of SEA at 2{,}048 accelerators and 0.16 at
+65{,}536, understating intervention value by factors of 1.4 and 6.2 respectively.
 The bias is structural: the informal metric implicitly divides by a marginal
 productivity of 1, and the true marginal productivity falls with scale. It errs
 most severely exactly where the investment decision is largest.
@@ -383,9 +383,9 @@ most severely exactly where the investment decision is largest.
 \subsection{Interventions interact, and not always as substitutes}
 
 Excluding cases where SEA is unbounded, bandwidth and topology improvements are
-substitutes as expected (mean additivity error $+6.9\%$), and a mixed network and
-reliability bundle likewise ($+10.5\%$). Recovery improvements are
-\emph{complements} ($-4.1\%$): faster checkpointing shortens the optimal
+substitutes as expected (mean additivity error $+6.5\%$), and a mixed network and
+reliability bundle likewise ($+7.5\%$). Recovery improvements are
+\emph{complements} ($-8.9\%$): faster checkpointing shortens the optimal
 checkpoint interval, which shrinks the window of discarded work, which raises
 the value of faster detection and restart. This refutes the direction we
 hypothesized and is reported as such.
@@ -407,7 +407,7 @@ Figure~\ref{fig:sea} gives the break-even costs directly. Two features matter
 for planning. Enlarging the scale-up domain and adding spares are worth nothing
 in every regime shown, because neither relieves a binding constraint at this
 configuration. And the spread across regimes is wide: faster restart ranges from
-roughly 310 to 2{,}400 accelerators depending on the regime, so a single quoted
+roughly 280 to 2{,}000 accelerators depending on the regime, so a single quoted
 value for such an intervention would be misleading.
 
 \subsection{Decision boundaries}
@@ -451,18 +451,18 @@ We sought negative cases deliberately.
 \paragraph{Where network investment is worth nothing.} With an already fast and
 flat network (3.2 Tb/s per accelerator, no oversubscription), every bandwidth
 and topology intervention has $\mathrm{SEA} = 0$ exactly, while halving the
-failure rate is worth 1{,}061 accelerators. The mirror case also holds: with
+failure rate is worth 954 accelerators. The mirror case also holds: with
 near-perfect reliability, halving the failure rate is worth zero while doubling
-bandwidth is worth 274.
+bandwidth is worth 255.
 
-\paragraph{Where nothing much matters.} At 1{,}024 accelerators every
-intervention is worth between 2 and 39 accelerators, because $\mathrm{UCF}$ is
+\paragraph{Where nothing much matters.} At 1{,}024 accelerators no
+intervention is worth more than 39 accelerators, because $\mathrm{UCF}$ is
 already 0.781. Small jobs do not justify infrastructure investment on capacity
 grounds.
 
 \paragraph{Where communication dominates.} Shortening the sequence to 2{,}048
 tokens or the global batch to 512 sequences raises the value of doubled
-bandwidth to 1{,}007 and 1{,}136 accelerators respectively, because
+bandwidth to 871 and 882 accelerators respectively, because
 communication becomes a larger share of a smaller step.
 
 \paragraph{Where accelerators cannot substitute at all.} At approximately
@@ -541,7 +541,8 @@ agreeing with any of our cost assumptions, of which we make none.
 \section*{Reproducibility}
 
 The complete implementation, configurations, raw results, and figure scripts are
-available at the repository accompanying this paper. The full experiment program
+available at
+\url{https://github.com/dimaggi-ai/network-vs-more-gpus}. The full experiment program
 runs in about ten seconds on a laptop and requires no accelerator access.
 \texttt{make reproduce} regenerates every number and figure in this paper;
 \texttt{make smoke-test} runs a fast subset. Raw results are immutable and carry

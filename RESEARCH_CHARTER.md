@@ -31,9 +31,9 @@ For a large synchronous training job, when does an improvement to network bandwi
 * **H2** The ranking of interventions by substitution value is not constant across operating regimes.
   *Status: supported.* Four distinct interventions rank first across the 96 in-envelope cells of the decision map, and the set of winners differs between 16,384 and 65,536 accelerators.
 * **H3** Interventions are substitutes, so the sum of their individual substitution values exceeds the value of the bundle.
-  *Status: partially refuted.* Network interventions are substitutes as predicted (mean additivity error +6.9 percent), but recovery interventions are complements (mean -4.1 percent): detection, restart, and checkpoint improvements are together worth more than the sum of their parts. Reported as a null result against the stated direction.
+  *Status: partially refuted.* Network interventions are substitutes as predicted (mean additivity error +6.5 percent), but recovery interventions are complements (mean -8.9 percent): detection, restart, and checkpoint improvements are together worth more than the sum of their parts. Reported as a null result against the stated direction.
 * **H4** The informal equivalent-accelerator metric is biased, and the bias grows with scale.
-  *Status: supported.* The informal figure is 0.72 of the substitution value at 2,048 accelerators and 0.10 at 65,536, an understatement of 1.4x rising to 9.9x.
+  *Status: supported.* The informal figure is 0.73 of the substitution value at 2,048 accelerators and 0.16 at 65,536, an understatement of 1.4x rising to 6.2x.
 * **H5** There exist regimes in which no accelerator count reproduces an intervention's effect.
   *Status: supported, outside the fast path's validity envelope and therefore confirmed with the event-driven path.* At approximately 131,000 accelerators under the study baseline, productive throughput decreases as the pool grows, so the substitution has no solution.
 
@@ -114,5 +114,5 @@ An arXiv preprint is justified if the novelty statement survives a repeated lite
 
 * **Go.** All met as of the first full run: novelty check passed, external validation passed, rank reversals present.
 * **Narrow (N1).** If every regime ranked the same intervention first, the contribution would narrow to the accounting framework and the validation study. Not triggered.
-* **Narrow (N2).** If the informal metric had turned out to be a good approximation of the substitution metric, the metric contribution would narrow to the accounting framework. Not triggered; the gap reaches a factor of 9.9.
+* **Narrow (N2).** If the informal metric had turned out to be a good approximation of the substitution metric, the metric contribution would narrow to the accounting framework. Not triggered; the gap reaches a factor of 6.2.
 * **Stop.** If prior work were found occupying the full intersection of communication modeling, failure modeling, cost comparison, and accelerator substitution, the project would pivot to the validation-and-accounting contribution. Not triggered as of the 2026-08-05 search; the search is to be repeated before submission.

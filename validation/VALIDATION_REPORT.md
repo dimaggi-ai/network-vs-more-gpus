@@ -124,7 +124,7 @@ Out-of-envelope rows remain in the raw output with a flag and are excluded from 
 | Useful capacity fraction is far below ETTR, by 26 points at 16,384 accelerators | Validated inputs, derived output | Validated throughput and MTTF at this exact configuration; the gap follows from the definitions |
 | Productive share falls from 0.78 to 0.38 between 1,024 and 65,536 accelerators | Partly extrapolated | Validated at 8,192 and 16,384; the endpoints are extrapolation, and the 1,024 figure is optimistic per the small-job limitation |
 | The best marginal investment changes with regime; four different interventions win | Extrapolated | No published counterfactual exists. Robust across the uncertainty analysis, but this is a model result |
-| The informal equivalent-accelerator metric understates value by 1.4x to 9.9x | Extrapolated, but structural | Follows from the marginal productivity of an added accelerator, which is a property of the validated scaling behavior |
+| The informal equivalent-accelerator metric understates value by 1.4x to 6.2x | Extrapolated, but structural | Follows from the marginal productivity of an added accelerator, which is a property of the validated scaling behavior |
 | Recovery interventions are complements, not substitutes | Extrapolated | Mechanism is explicable and consistent across regimes, but unmeasured |
 | Beyond roughly 131,000 accelerators no purchase matches an infrastructure improvement | Extrapolated, confirmed at high fidelity | Outside the fast path's envelope; recomputed with the event-driven path. Depends on the strong-scaling assumption |
 

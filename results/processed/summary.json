@@ -36,41 +36,41 @@
     }
   },
   "naive_metric_bias": {
-    "2048": 0.721,
-    "8192": 0.578,
-    "16384": 0.444,
-    "32768": 0.271,
-    "65536": 0.101
+    "2048": 0.733,
+    "8192": 0.617,
+    "16384": 0.501,
+    "32768": 0.343,
+    "65536": 0.16
   },
   "naive_metric_understatement_factor": {
-    "2048": 1.39,
-    "8192": 1.73,
-    "16384": 2.25,
-    "32768": 3.69,
-    "65536": 9.86
+    "2048": 1.36,
+    "8192": 1.62,
+    "16384": 2.0,
+    "32768": 2.92,
+    "65536": 6.24
   },
   "additivity": {
     "rows_used": 22,
     "rows_capped_or_outside": 8,
     "by_bundle": {
       "mixed_quad": {
-        "mean_error": 0.105,
-        "min": -0.017,
-        "max": 0.254
+        "mean_error": 0.075,
+        "min": -0.055,
+        "max": 0.207
       },
       "network_pair": {
-        "mean_error": 0.069,
+        "mean_error": 0.065,
         "min": 0.0,
-        "max": 0.133
+        "max": 0.119
       },
       "recovery_trio": {
-        "mean_error": -0.041,
-        "min": -0.068,
-        "max": -0.015
+        "mean_error": -0.089,
+        "min": -0.147,
+        "max": -0.019
       }
     },
-    "superadditive_rows": 9,
-    "subadditive_rows": 10
+    "superadditive_rows": 10,
+    "subadditive_rows": 9
   },
   "rank_stability": {
     "draws_inside_envelope": 323,
@@ -90,11 +90,19 @@
     "n_outside": 3
   },
   "counterexamples": {
+    "failslow_fleet": {
+      "n_accelerators": 16384,
+      "baseline_ucf": 0.418,
+      "max_network_sea": 425.4,
+      "max_reliability_sea": 970.5,
+      "any_unattainable_by_scaling": false,
+      "within_validity_envelope": true
+    },
     "huge_batch": {
       "n_accelerators": 16384,
       "baseline_ucf": 0.684,
-      "max_network_sea": 232.2,
-      "max_reliability_sea": 936.2,
+      "max_network_sea": 217.1,
+      "max_reliability_sea": 877.8,
       "any_unattainable_by_scaling": false,
       "within_validity_envelope": true
     },
@@ -109,8 +117,8 @@
     "long_sequence": {
       "n_accelerators": 16384,
       "baseline_ucf": 0.643,
-      "max_network_sea": 221.7,
-      "max_reliability_sea": 1065.6,
+      "max_network_sea": 197.7,
+      "max_reliability_sea": 957.1,
       "any_unattainable_by_scaling": false,
       "within_validity_envelope": true
     },
@@ -118,14 +126,14 @@
       "n_accelerators": 16384,
       "baseline_ucf": 0.642,
       "max_network_sea": 0.0,
-      "max_reliability_sea": 1060.8,
+      "max_reliability_sea": 954.3,
       "any_unattainable_by_scaling": false,
       "within_validity_envelope": true
     },
     "perfect_reliability": {
       "n_accelerators": 16384,
       "baseline_ucf": 0.704,
-      "max_network_sea": 413.2,
+      "max_network_sea": 385.7,
       "max_reliability_sea": 0.0,
       "any_unattainable_by_scaling": false,
       "within_validity_envelope": true
@@ -133,32 +141,32 @@
     "short_sequence": {
       "n_accelerators": 16384,
       "baseline_ucf": 0.591,
-      "max_network_sea": 1541.0,
-      "max_reliability_sea": 1188.4,
+      "max_network_sea": 1340.0,
+      "max_reliability_sea": 1029.3,
       "any_unattainable_by_scaling": false,
       "within_validity_envelope": true
     },
     "tiny_batch": {
       "n_accelerators": 16384,
       "baseline_ucf": 0.472,
-      "max_network_sea": 1730.5,
-      "max_reliability_sea": 1744.7,
+      "max_network_sea": 1358.7,
+      "max_reliability_sea": 1370.4,
       "any_unattainable_by_scaling": false,
       "within_validity_envelope": true
     },
     "tiny_job": {
       "n_accelerators": 1024,
       "baseline_ucf": 0.781,
-      "max_network_sea": 9.5,
-      "max_reliability_sea": 7.4,
+      "max_network_sea": 9.4,
+      "max_reliability_sea": 7.3,
       "any_unattainable_by_scaling": false,
       "within_validity_envelope": true
     },
     "weak_scaling": {
       "n_accelerators": 16384,
       "baseline_ucf": 0.627,
-      "max_network_sea": 391.1,
-      "max_reliability_sea": 887.0,
+      "max_network_sea": 373.3,
+      "max_reliability_sea": 847.5,
       "any_unattainable_by_scaling": false,
       "within_validity_envelope": true
     }
