@@ -1,4 +1,4 @@
-# Network capacity is sometimes compute capacity
+# GPU Cluster Networking: How Interconnect Bandwidth Caps AI Training Throughput at Scale
 
 **When is improving the network, reliability, or recovery of an accelerator fleet worth more than buying more accelerators, and where does that answer change?**
 
