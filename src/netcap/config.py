@@ -58,12 +58,47 @@ class AcceleratorSpec:
 
 @dataclass(frozen=True)
 class TopologySpec:
-    """Three-tier hierarchy: scale-up domain, full-bisection pod, cross-pod.
+    """Four-tier hierarchy: scale-up domain, full-bisection pod, cross-pod, span.
 
     ``oversubscription`` is the cross-pod ratio expressed as a number >= 1, so a
     1:7 oversubscribed spine layer is ``7.0``. ``net_efficiency`` is the fraction
     of line rate a well-tuned collective library achieves; it absorbs protocol
     overhead, imperfect ring formation, and moderate congestion.
+
+    The **span** tier is the inter-hall stitch: a circuit joining two latency
+    domains in different halls or buildings. It differs from the three fabric
+    tiers in one way that drives every result in :mod:`netcap.regimes`, and the
+    difference is structural rather than a matter of degree:
+
+    * The three fabric tiers are described by a **per-accelerator** bandwidth.
+      Buying a wider pod buys every rank more bandwidth.
+    * ``span_bw_gbps`` is an **aggregate circuit capacity shared by every group
+      that crosses it**. Its per-rank share falls as more groups cross, so the
+      cost of a stitch depends on *which* parallel dimension is cut across it,
+      not only on how far away the other hall is.
+
+    ``halls`` of 1 (the default) disables the span tier entirely and reproduces
+    the three-tier model exactly; every scenario shipped in ``configs/`` before
+    the span work leaves it at the default.
+
+    ``span_dimension`` names the cut placed across the stitch --- the "named
+    cut" an operator chooses when a job is allowed to span. ``"none"`` keeps the
+    job hall-local. Only the named dimension crosses; every other dimension is
+    laid out inside one hall.
+
+    ``span_placement`` is how the crossing group's ranks are ordered, and it is
+    the difference between a stitch that works and one that does not:
+
+    * ``"hierarchical"`` --- contiguous placement. The group reduces inside each
+      hall first and the ring at the span tier has one member per hall, so the
+      stitch latency is paid ``2(halls - 1)`` times per collective.
+    * ``"blind"`` --- a topology-blind ring that interleaves ranks across halls,
+      so the ring crosses the stitch on almost every hop and the latency is paid
+      ``2(size - 1)`` times. This is not a strawman: it is what a collective
+      library does when nothing tells it where the hall boundary is, and it is
+      the configuration in which published geo-distributed training studies
+      report their distance cliffs. Reproducing that cliff and then removing it
+      by changing only the placement is the point of ``docs/regime-atlas.md``.
     """
 
     scaleup_domain: int  # accelerators sharing the scale-up fabric
@@ -73,6 +108,28 @@ class TopologySpec:
     alpha_pod_us: float = 6.0
     alpha_xpod_us: float = 15.0
     net_efficiency: float = 0.85
+    halls: int = 1  # latency domains the pool is split across
+    alpha_span_us: float = 0.0  # one-way latency of the inter-hall stitch
+    span_bw_gbps: float = 0.0  # aggregate circuit capacity, shared by all crossers
+    span_dimension: str = "none"  # none | tp | cp | pp | dp
+    span_placement: str = "hierarchical"  # hierarchical | blind
+
+    def __post_init__(self) -> None:
+        if self.span_dimension not in ("none", "tp", "cp", "pp", "dp"):
+            raise ValueError(f"unknown span_dimension {self.span_dimension!r}")
+        if self.span_placement not in ("hierarchical", "blind"):
+            raise ValueError(f"unknown span_placement {self.span_placement!r}")
+        if self.halls < 1:
+            raise ValueError("halls must be >= 1")
+        if self.halls > 1 and self.span_dimension == "none":
+            raise ValueError("halls > 1 requires a named span_dimension")
+        if self.spans and self.span_bw_gbps <= 0.0:
+            raise ValueError("a span_dimension requires span_bw_gbps > 0")
+
+    @property
+    def spans(self) -> bool:
+        """True when a cut is actually placed across a stitch."""
+        return self.halls > 1 and self.span_dimension != "none"
 
 
 @dataclass(frozen=True)

@@ -36,13 +36,35 @@ What could be done instead was validation against published measurements: one co
 | Bandwidth is rarely the best marginal buy at 16K scale | Ranks first in 0.6% of 323 uncertainty draws; reliability and recovery improvements take the other 99.4% | 16,384 accelerators, documented parameter ranges |
 | Recovery improvements are complements, not substitutes | Bundle worth 8.9% more than the sum of parts, against a hypothesis that predicted the opposite | All regimes tested |
 | Beyond a point, accelerators cannot substitute at all | At ~131,000 accelerators throughput peaks 1.2% above baseline then falls; the reliability intervention exceeds anything purchasable | Both implementations agree to 0.03% on this case |
+| Spreading a job across halls: placement beats distance | A 1,000x change in round-trip time costs the data-parallel cut 1.2 points; reordering the ranks at fixed distance costs it 2.7x, and the pipeline cut 6.5x | Two halls, 400 Gbit/s, both placements reported for every cell |
+| Tensor-parallel never survives a stitch, checkpoint traffic never notices one | Tensor-parallel retains 0.004 at any distance; checkpoint retention is flat to four decimals across a 1,000x RTT range | The atlas, all widths tested |
+| A fixed stitch erodes as the cluster grows | Pipeline-cut retention falls 0.919 to 0.506 from 4,096 to 65,536 accelerators on an unchanged 120 km, 800 Gbit/s circuit | Why a two-site field trial does not extrapolate |
+
+## Scale-across: can a job be spread across halls?
+
+The three-tier model describes one hall. A fourth tier — a stitch between halls,
+which is an *aggregate shared circuit* rather than a per-accelerator entitlement
+— answers which cut of a job survives being split, at what distance, over what
+width. It is inert by default: every span term is exactly zero when `halls == 1`,
+and every result published before it is reproduced byte-identically.
+
+The finding is that the usual question, *how far apart can the halls be?*, is
+close to the wrong one. Stretching the stitch from a campus to a coast-to-coast
+path costs the data-parallel cut 1.2 points of useful capacity. Reordering the
+ranks, at fixed distance and fixed circuit, costs it 2.7x — and costs the
+pipeline cut 6.5x, because an interleaved launcher puts every one of the `pp - 1`
+stage boundaries on a hall edge instead of one.
+
+Full tables, the exposed-bytes rule that orders them, and everything the model
+declines to claim: [`docs/regime-atlas.md`](docs/regime-atlas.md).
 
 ## What remains unvalidated
 
 - **No hardware measurement anywhere in this project.**
 - **Small jobs.** The per-node Poisson failure model reproduces published job MTTF at 16,384 and 131,072 accelerators within a few percent but misses the measured 1,024-GPU figure by 3.7x. Results below roughly 4,096 accelerators are indicative only. The source's own published figures are not mutually consistent under inverse scaling.
 - **The substitution metric's output.** No published source reports a system measured before and after a network or reliability change, so the metric's inputs are validated but its output is not.
-- **Correlated failures**, fault isolation, cross-campus pooling, inference, mixture-of-experts routing, and asynchronous training are all out of scope.
+- **The span tier is unmeasured.** The scale-across atlas reproduces one published anchor (near-complete overlap below 10 km) and a metro two-site floor, and **declines** the rest, including the widely quoted 26x distance cliff. A stitch is modelled as a bandwidth and a latency only: no insertion loss, bit-error rate, circuit flap, or retune. See the DECLINED list printed by `validation/validate_span.py`.
+- **Correlated failures**, fault isolation, inference, mixture-of-experts routing, and asynchronous training are all out of scope.
 
 Full detail in [`validation/VALIDATION_REPORT.md`](validation/VALIDATION_REPORT.md), including a validation run that **failed** and what it changed.
 
@@ -70,6 +92,7 @@ The full program runs in about **10 seconds** on a laptop. No accelerator access
 | Research charter | [`RESEARCH_CHARTER.md`](RESEARCH_CHARTER.md) |
 | Metric definitions | [`docs/metric_framework.md`](docs/metric_framework.md) |
 | Literature analysis and white space | [`docs/literature_matrix.md`](docs/literature_matrix.md) |
+| Latency-regime atlas (scale-across) | [`docs/regime-atlas.md`](docs/regime-atlas.md) |
 | Evidence ledger | [`SOURCES.md`](SOURCES.md) |
 | Decision log | [`DECISIONS.md`](DECISIONS.md) |
 | Assumptions and their ranges | [`ASSUMPTIONS.md`](ASSUMPTIONS.md) |
@@ -86,6 +109,8 @@ The full program runs in about **10 seconds** on a laptop. No accelerator access
 | **The decision map.** Four different interventions rank first depending on regime and scale. | **Break-even costs.** How much each intervention may cost, in accelerators, before it stops paying. |
 | ![Informal metric bias](figures/fig5_naive_bias.png) | ![Rank stability](figures/fig6_rank_stability.png) |
 | **The informal equivalent-GPU metric** understates value by up to 4.6x, worsening with scale. | **Rank stability** over 323 draws from documented parameter ranges. |
+| ![Placement, not distance](figures/fig8_placement_not_distance.png) | ![Width and scale](figures/fig9_width_and_scale.png) |
+| **Placement, not distance.** Same fiber, same circuit, same job; only the rank order changes. | **Where width stops helping,** and how a fixed stitch erodes as the cluster sharing it grows. |
 
 ## Configuration example
 

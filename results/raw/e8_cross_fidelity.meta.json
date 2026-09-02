@@ -1,10 +1,10 @@
 {
   "experiment": "e8_cross_fidelity",
   "netcap_version": "1.0.0",
-  "git_commit": "ca663c359976820011bc3d46eb2132e53b771661",
+  "git_commit": "f93e0f2fadf1ae7a7ce905c650820ff82b495a44",
   "seed": 20260805,
   "baseline_scenario": "reference_405b_16k",
-  "baseline_digest": "87055490caa7ae6d",
+  "baseline_digest": "87d1f18a1bb8d717",
   "rows": 16,
   "notes": "Agreement between the two independent reliability implementations."
 }

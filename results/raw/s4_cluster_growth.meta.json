@@ -1,0 +1,10 @@
+{
+  "experiment": "s4_cluster_growth",
+  "netcap_version": "1.0.0",
+  "git_commit": "f93e0f2fadf1ae7a7ce905c650820ff82b495a44",
+  "seed": 20260901,
+  "baseline_scenario": "reference_405b_16k",
+  "baseline_digest": "87d1f18a1bb8d717",
+  "rows": 10,
+  "notes": "A 120 km 800 Gbit/s stitch, held fixed, serving progressively larger clusters. Contention grows with the cluster and the circuit does not, which is why a two-site result at one scale does not transfer upward."
+}

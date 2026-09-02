@@ -1,0 +1,191 @@
+{
+  "points": [
+    {
+      "name": "distance-does-not-bind-below-ten-km",
+      "kind": "calibrated",
+      "ref": "SOURCES.md S20",
+      "expected": "<= 0.005",
+      "actual": "0.00195",
+      "ok": true,
+      "note": "Corning's ASTRA-sim study reports near-complete compute-communication overlap below 10 km. Stated as the cost of moving a hall from next-door to 10 km at a FIXED circuit, which isolates distance and leaves no width to choose: the worst case over every reported width, both placements, and both cuts is quoted. A model that showed a penalty here would be wrong about the short end of the curve no matter what it did at distance."
+    },
+    {
+      "name": "metro-two-site-both-cuts-clear-the-floor",
+      "kind": "calibrated",
+      "ref": "SOURCES.md S18",
+      "expected": ">= 0.9",
+      "actual": "0.9534",
+      "ok": true,
+      "note": "The OFC 2025 field trial ran 175B across two datacentres 120 km apart on an 800 Gbit/s link and measured 99.41 percent (pipeline) and 98.95 percent (data-parallel) relative training efficiency. This is a floor those measurements clear comfortably, not a reconstruction of them: see DECLINED."
+    },
+    {
+      "name": "exposed-bytes-order-the-cuts",
+      "kind": "emergent",
+      "ref": "-",
+      "expected": "0 violations",
+      "actual": "0 violations",
+      "ok": true,
+      "note": "The atlas is not a table of cut types. Across four parallel plans, the cut that leaves fewer bytes unhidden on the circuit is the cut that retains more useful capacity -- so which cut a stitch favours is a property of the plan, not of the cut. Raw bytes get this wrong: on the GPT-3 plans the pipeline cut moves far fewer bytes than the data-parallel cut and still retains less. Stated as an ordering because there is nothing in it to tune. "
+    },
+    {
+      "name": "blind-penalty-grows-with-the-crossing-ring",
+      "kind": "emergent",
+      "ref": "-",
+      "expected": "strictly increasing, >= 2.0x end to end",
+      "actual": "2.95 -> 4.89 -> 8.65 -> 15.71 (5.3x)",
+      "ok": true,
+      "note": "A topology-blind ring pays the stitch latency 2(k-1) times, so its penalty must scale with the ring it puts across the boundary. This is the scaling law that makes the published cliffs reachable at their scale and modest at this one; the magnitude itself is declined."
+    },
+    {
+      "name": "blind-penalty-grows-with-distance",
+      "kind": "emergent",
+      "ref": "-",
+      "expected": "non-decreasing, >= 1.5x end to end",
+      "actual": "1.00 -> 1.00 -> 1.00 -> 1.02 -> 2.95 (3.0x)",
+      "ok": true,
+      "note": "The distance axis must bite somewhere, or the atlas has no latency story at all. Under blind placement it does, monotonically -- and by enough to see. Monotonicity alone would be satisfied by five identical numbers, which is exactly what a model that had forgotten about latency would produce."
+    },
+    {
+      "name": "placement-not-distance-causes-the-cliff",
+      "kind": "emergent",
+      "ref": "-",
+      "expected": "blind excess >= 0.5 and >= 2.0x hierarchical",
+      "actual": "blind 2.95x vs hierarchical 1.01x",
+      "ok": true,
+      "note": "The headline. Holding the fiber, the circuit, and the job fixed and changing only the order the ranks sit in removes most of the distance penalty. This is the sense in which scale-across is a software problem: the plant was never the binding constraint. Both sides are measured at the same width, so the probe-circuit artifact noted in DECLINED cancels. The absolute floor matters as much as the ratio here: with no cliff at all, 0 >= 2 x 0 holds and the claim would pass while saying nothing."
+    },
+    {
+      "name": "pipeline-placement-costs-at-every-distance",
+      "kind": "emergent",
+      "ref": "-",
+      "expected": "blind >= 2.0x hierarchical in all five regimes",
+      "actual": "7.2x -> 7.2x -> 7.2x -> 7.2x -> 7.3x",
+      "ok": true,
+      "note": "A pipeline laid out round-robin puts every one of its pp-1 stage boundaries on a hall edge; laid out contiguously it puts exactly one there. The gap is flat across the distance regimes, which is the cleanest statement of the headline available anywhere in this registry: for the pipeline cut the penalty is caused by the launcher and not by the fiber at all."
+    },
+    {
+      "name": "a-metro-stitch-degrades-as-the-cluster-grows",
+      "kind": "emergent",
+      "ref": "-",
+      "expected": "strictly decreasing",
+      "actual": "0.953 -> 0.857 -> 0.698",
+      "ok": true,
+      "note": "Contention scales with the cluster while the circuit does not, so a two-site configuration demonstrated at one scale does not transfer to a larger one on the same link. This is the reason a successful field trial is not a frontier-scale result, and it is the model's sharpest warning against extrapolating one."
+    },
+    {
+      "name": "tensor-parallel-is-the-only-distance-bound-cut",
+      "kind": "emergent",
+      "ref": "-",
+      "expected": "tp > 0.05, pp and dp <= 0.05",
+      "actual": "tp=0.834, pp=0.016, dp=0.015",
+      "ok": true,
+      "note": "On a circuit wide enough that bandwidth has stopped binding, moving from a campus stitch to a coast-to-coast path costs the pipeline and data-parallel cuts almost nothing and costs the tensor-parallel cut a great deal, because tensor parallelism pays the stitch latency once per layer per micro-batch. Measured as a near-versus-far ratio at one width, so the probe artifact cancels."
+    },
+    {
+      "name": "hall-local-is-the-published-three-tier-model",
+      "kind": "sanity",
+      "ref": "-",
+      "expected": "step times identical",
+      "actual": "delta 0.000e+00 s",
+      "ok": true,
+      "note": "Every span term is exactly zero when halls == 1, which is what lets this extension ship inside a repository whose published results must not move."
+    },
+    {
+      "name": "spanning-never-speeds-a-step-up-at-reported-widths",
+      "kind": "sanity",
+      "ref": "-",
+      "expected": "no cell faster than hall-local",
+      "actual": "0 faster cells",
+      "ok": true,
+      "note": "Splitting a job across a stitch must not make it finish sooner. Checked over every cut, regime, reported width, and placement. This holds up to 12.8 Tbit/s and then fails, for a structural reason recorded in DECLINED -- which is why the reported range stops where it does. "
+    },
+    {
+      "name": "widening-a-circuit-never-slows-a-step",
+      "kind": "sanity",
+      "ref": "-",
+      "expected": "monotone over the full width ladder",
+      "actual": "0 inversions",
+      "ok": true,
+      "note": "Ten widths from 100 Gbit/s to 204.8 Tbit/s, every cut, regime, and placement. An inversion would mean the contention or NIC-cap arithmetic has a sign error. "
+    },
+    {
+      "name": "stitch-latency-survives-total-overlap",
+      "kind": "sanity",
+      "ref": "-",
+      "expected": "step still grows at overlap = 1.0",
+      "actual": "4.5514 s vs 4.4714 s",
+      "ok": true,
+      "note": "The serially chained hops drain at the step boundary and cannot hide behind compute. If setting every overlap fraction to 1.0 made distance free, the model would be treating latency as though it were bandwidth."
+    },
+    {
+      "name": "no-rank-outruns-its-own-nic",
+      "kind": "sanity",
+      "ref": "-",
+      "expected": "share == NIC line rate at an unbounded circuit",
+      "actual": "42.50 vs 42.50 GB/s",
+      "ok": true,
+      "note": "An arbitrarily fat circuit must not let the span tier beat the fabric the ranks are attached to."
+    },
+    {
+      "name": "widening-past-the-nic-cap-buys-exactly-nothing",
+      "kind": "sanity",
+      "ref": "-",
+      "expected": "0.0",
+      "actual": "0.000000",
+      "ok": true,
+      "note": "Once the per-rank share is pinned to the NIC line rate, doubling the circuit cannot change any term in the step. This is where the Corning bandwidth-insensitivity result comes from in this model -- and it is why that anchor is DECLINED rather than calibrated: the study's 0.0066 ceiling is satisfied here by construction, not by agreement."
+    },
+    {
+      "name": "no-stitch-no-stitch-latency",
+      "kind": "sanity",
+      "ref": "-",
+      "expected": "0.0",
+      "actual": "0.000e+00",
+      "ok": true,
+      "note": "The span latency term must vanish for a job that never leaves its hall."
+    }
+  ],
+  "declined": [
+    {
+      "title": "the 26x magnitude of the published distance cliff",
+      "reason": "Corning's ASTRA-sim study reports ~26x step-time penalty at 1,000 km, but its parallel plan, global batch, and ring construction are not published in the detail a reconstruction needs. This registry pins the qualitative behaviours it does report and the ring-size scaling law, and declines the number."
+    },
+    {
+      "title": "the same study's bandwidth-insensitivity claim at its own operating width",
+      "reason": "The claim that doubling inter-datacentre bandwidth buys at most 0.66 percent is conditional on a circuit width the study does not publish. This model produces gains from 21 percent (doubling 400G) down to exactly zero (doubling past the NIC cap) for that same operation. Any width that makes the anchor pass would be a width chosen to make the anchor pass, so the anchor is not checked at all."
+    },
+    {
+      "title": "the OFC 2025 field trial's exact 99.41 / 98.95 percent figures",
+      "reason": "Cluster size, global batch, and micro-batch schedule are not published. The model is checked against a floor those measurements clear, not against the measurements. It is conservative by roughly four points at the closest configuration this project can reconstruct."
+    },
+    {
+      "title": "the trial's ordering of the pipeline cut above the data-parallel cut",
+      "reason": "The two measurements differ by 0.46 points. This model does not resolve a gap that size and makes no claim about which of the two cuts a metro stitch favours in that configuration."
+    },
+    {
+      "title": "spanning as a strict penalty at circuits wider than 12.8 Tbit/s",
+      "reason": "Above that width the model makes a split job up to 0.36 percent FASTER than a hall-local one, because each hall's residual group occupies fewer pods and the cross-pod hop it drops costs more than the stitch exchange that replaces it. That is a real consequence of the tier structure, not a rounding error, and it is why retention is only reported at or below 3.2 Tbit/s. The probe circuit appears here solely inside fixed-width comparisons, where the effect cancels."
+    },
+    {
+      "title": "inference and interactive-SLO spans",
+      "reason": "There is no inference metric in this model; useful capacity is a training quantity. The question of which interactive workloads clear which distance belongs to edge-continuum-placement, which has the latency-domain gates."
+    },
+    {
+      "title": "asynchronous and low-communication training across a stitch",
+      "reason": "The model is synchronous-only. DiLoCo-class methods (SOURCES.md S17) change the communication structure this atlas assumes, so no cell here describes them."
+    },
+    {
+      "title": "optical-layer behaviour: insertion loss, bit-error rate, circuit flap, retune",
+      "reason": "The stitch is a bandwidth and a latency here. Whether the declared circuit is the measured circuit, and what happens when it degrades, is a separate world-model problem and is not modelled anywhere in this repository."
+    },
+    {
+      "title": "more than two halls",
+      "reason": "The span tier accepts halls > 2 and the ring term is general, but no published measurement was found to check a three-or-more-hall configuration against, so no result in this repository is reported for one."
+    },
+    {
+      "title": "any cost expressed in currency",
+      "reason": "The research charter forbids currency figures project-wide: SEA is a break-even ratio and quoting a price would import an assumption the model does not test. The dollar comparison lives in compute-power-placement."
+    }
+  ],
+  "all_pass": true
+}

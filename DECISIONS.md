@@ -192,3 +192,90 @@ draws) ahead of halving the failure rate (29.1 percent); and the informal
 metric's worst-case understatement is 4.6x rather than 6.2x. The qualitative
 conclusions (rank reversals exist, bandwidth rarely wins at 16K scale, recovery
 improvements are complements) are unchanged.
+
+---
+
+## D16. Add a span tier to the topology, inert unless a job is explicitly split
+**Date:** 2026-09-01. **Phase:** 6.
+
+The three-tier model (scale-up, pod, cross-pod) describes one hall. Answering
+whether a job can be spread across halls needs a fourth tier, and the fourth
+tier is not like the other three: its bandwidth is an *aggregate shared
+circuit*, not a per-accelerator entitlement, so the number of groups crossing it
+determines what each one gets. `TopologySpec` therefore gains `halls`,
+`alpha_span_us`, `span_bw_gbps`, `span_dimension`, and `span_placement`.
+
+Every one of those defaults to the hall-local case, and every span term is
+exactly zero when `halls == 1`. This is load-bearing rather than tidy: this
+repository's published results must not move, and
+`validate_span.py`'s `hall-local-is-the-published-three-tier-model` and
+`tests/test_span.py`'s `test_published_results_do_not_move` both assert
+byte-identical step times against the pre-span model. The Llama 3 validation
+program passes unchanged.
+
+A per-rank share is also capped at the rank's own NIC line rate. Without that
+cap an arbitrarily wide circuit lets the span tier outrun the fabric the ranks
+are actually attached to, and an early draft of the model duly reported that
+splitting a job across two halls made it *faster*.
+
+---
+
+## D17. Expose stitch latency rather than overlapping it, and make the pipeline's crossing fraction a placement question
+**Date:** 2026-09-01. **Phase:** 6.
+
+Two decisions about how a stitch is charged, both of which change the answer.
+
+**Latency is exposed.** The bandwidth term of a ring collective streams
+alongside the backward pass, but the `2(k-1)` chained hops are serially
+dependent and drain at the step boundary. Charging the stitch's latency at the
+same overlap fraction as its bandwidth term makes a model conclude that distance
+is free, which is exactly the error this study exists to test for. So
+`span_alpha_seconds` is split out and added back in full after the overlap
+fraction is applied to the rest. Intra-hall alphas are deliberately excluded:
+they are microseconds, and touching them would move published results.
+
+**The pipeline's crossing fraction follows placement.** A spanned pipeline is
+not costed at its worst boundary for every handoff, the way the cross-pod case
+is. How many of the `pp - 1` stage boundaries land on a hall edge depends
+entirely on how stages were laid out: contiguous blocks put exactly `halls - 1`
+there, round-robin interleaving puts every one there. Charging all of them
+unconditionally would manufacture the distance cliff this study is testing;
+charging one unconditionally would hide it. The first draft did the latter, and
+the atlas duly reported that rank order is irrelevant to a pipeline — a 15x
+error at the study baseline, and a false one. The logic now lives in
+`pipeline_crossing_fraction`, named rather than inlined so that
+`tests/test_span.py` can delete it and require the registry to notice.
+
+---
+
+## D18. Report retention only at or below 3.2 Tbit/s, and decline the Corning bandwidth anchor
+**Date:** 2026-09-01. **Phase:** 6.
+
+Two limits found while building the validation registry, both recorded rather
+than worked around.
+
+**The reported width ceiling.** Above 12.8 Tbit/s the tier model makes a split
+job up to 0.36 percent *faster* than a hall-local one: each hall's residual
+group occupies fewer pods, and the cross-pod hop it drops costs more than the
+stitch exchange replacing it. That is a real consequence of the tier structure,
+not a rounding error. Retention is therefore reported only at or below 3.2
+Tbit/s — 8x400G, the widest metro DCI class in deployment — and the wider probe
+circuit appears only inside fixed-width comparisons, where the effect cancels on
+both sides. The onset width and the magnitude are both printed in the registry's
+DECLINED list.
+
+**The declined anchor.** Corning's study (S20) reports that doubling inter-DC
+bandwidth improves overlap by at most 0.66 percent, but does not publish the
+circuit width it modelled. This model produces gains from 21 percent (doubling
+400G) down to exactly zero (doubling past the NIC cap) for that same operation.
+A first draft of the registry "passed" the anchor by starting the doubling at
+204.8 Tbit/s, which is to say by choosing the answer; the number would have
+looked like calibration and been nothing of the sort. It is now DECLINED. What
+survives is the study's short-distance claim, which can be stated without
+reference to any width — the cost of moving a hall from next-door to 10 km at a
+*fixed* circuit — and therefore has no free parameter to fit. The zero-gain
+result is filed as sanity rather than calibration, because once the per-rank
+share is pinned to the NIC line rate it is true by construction.
+
+Of Corning's four headline numbers this repository reproduces one, declines the
+26x magnitude and the bandwidth claim, and does not test the hollow-core figure.

@@ -1,0 +1,301 @@
+circuit_gbps,placement,regime,alpha_us,cut,applicable,retention,step_ratio,reason
+100.0,hierarchical,scale-up,0.5,tp,True,0.001086179618594248,920.6580411573335,
+100.0,hierarchical,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+100.0,hierarchical,scale-up,0.5,pp,True,0.2781982337503343,3.5945591261281624,
+100.0,hierarchical,scale-up,0.5,dp,True,0.8705637205884272,1.1486809941081446,
+100.0,hierarchical,scale-up,0.5,checkpoint,True,0.7284991028072172,1.0,
+100.0,hierarchical,rail,3.0,tp,True,0.001086179152597947,920.6584361412004,
+100.0,hierarchical,rail,3.0,cp,False,,,cp has degree 1 in this job
+100.0,hierarchical,rail,3.0,pp,True,0.27819816905303085,3.594559962072854,
+100.0,hierarchical,rail,3.0,dp,True,0.8705631266387461,1.1486817778062928,
+100.0,hierarchical,rail,3.0,checkpoint,True,0.7284991021275278,1.0,
+100.0,hierarchical,campus-stitch,40.0,tp,True,0.0010861722558994432,920.664281902427,
+100.0,hierarchical,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+100.0,hierarchical,campus-stitch,40.0,pp,True,0.278197211536458,3.5945723340542863,
+100.0,hierarchical,campus-stitch,40.0,dp,True,0.8705543362782227,1.1486933765388854,
+100.0,hierarchical,campus-stitch,40.0,checkpoint,True,0.7284990920681291,1.0,
+100.0,hierarchical,metro,500.0,tp,True,0.0010860865204736481,920.7369589338929,
+100.0,hierarchical,metro,500.0,cp,False,,,cp has degree 1 in this job
+100.0,hierarchical,metro,500.0,pp,True,0.27818530782670325,3.594726147877495,
+100.0,hierarchical,metro,500.0,dp,True,0.8704450655356794,1.1488375769981434,
+100.0,hierarchical,metro,500.0,checkpoint,True,0.7284989670053684,1.0,
+100.0,hierarchical,region,40000.0,tp,True,0.0010787745979817936,926.9777040271731,
+100.0,hierarchical,region,40000.0,cp,False,,,cp has degree 1 in this job
+100.0,hierarchical,region,40000.0,pp,True,0.27716692696967704,3.6079340740008394,
+100.0,hierarchical,region,40000.0,dp,True,0.8611632535916086,1.161220007738779,
+100.0,hierarchical,region,40000.0,checkpoint,True,0.7284882281662717,1.0,
+100.0,blind,scale-up,0.5,tp,True,0.00015531297111530406,6438.612260257399,
+100.0,blind,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+100.0,blind,scale-up,0.5,pp,True,0.025051112478754793,39.91838689192244,
+100.0,blind,scale-up,0.5,dp,True,0.12350816459940919,8.096630722701091,
+100.0,blind,scale-up,0.5,checkpoint,True,0.7284991028072172,1.0,
+100.0,blind,rail,3.0,tp,True,0.00015531290442039785,6438.615025144466,
+100.0,blind,rail,3.0,cp,False,,,cp has degree 1 in this job
+100.0,blind,rail,3.0,pp,True,0.025051104609697616,39.918399431092816,
+100.0,blind,rail,3.0,dp,True,0.12350664636601853,8.096730252365907,
+100.0,blind,rail,3.0,checkpoint,True,0.7284991021275278,1.0,
+100.0,blind,campus-stitch,40.0,tp,True,0.0001553119173424834,6438.655945473051,
+100.0,blind,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+100.0,blind,campus-stitch,40.0,pp,True,0.025050988148229484,39.91858501081429,
+100.0,blind,campus-stitch,40.0,dp,True,0.1234841808751983,8.098203291405152,
+100.0,blind,campus-stitch,40.0,checkpoint,True,0.7284990920681291,1.0,
+100.0,blind,metro,500.0,tp,True,0.00015529964661054914,6439.164684693316,
+100.0,blind,metro,500.0,cp,False,,,cp has degree 1 in this job
+100.0,blind,metro,500.0,pp,True,0.02504954033930734,39.92089221816242,
+100.0,blind,metro,500.0,dp,True,0.1232055610595705,8.116516749730923,
+100.0,blind,metro,500.0,checkpoint,True,0.7284989670053684,1.0,
+100.0,blind,region,40000.0,tp,True,0.00015425314720715432,6482.849900346277,
+100.0,blind,region,40000.0,cp,False,,,cp has degree 1 in this job
+100.0,blind,region,40000.0,pp,True,0.02492583870668806,40.119011110012586,
+100.0,blind,region,40000.0,dp,True,0.1032089153067249,9.689085453791625,
+100.0,blind,region,40000.0,checkpoint,True,0.7284882281662717,1.0,
+200.0,hierarchical,scale-up,0.5,tp,True,0.0021700340868936276,460.8222543782644,
+200.0,hierarchical,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+200.0,hierarchical,scale-up,0.5,pp,True,0.4353575551937595,2.2969625496792894,
+200.0,hierarchical,scale-up,0.5,dp,True,0.9310994155242696,1.0739991705793681,
+200.0,hierarchical,scale-up,0.5,checkpoint,True,0.8160851272705462,1.0,
+200.0,hierarchical,rail,3.0,tp,True,0.002170032226897259,460.822649362131,
+200.0,hierarchical,rail,3.0,cp,False,,,cp has degree 1 in this job
+200.0,hierarchical,rail,3.0,pp,True,0.4353573967520362,2.296963385623981,
+200.0,hierarchical,rail,3.0,dp,True,0.9310987361006955,1.0739999542775163,
+200.0,hierarchical,rail,3.0,checkpoint,True,0.8160851262535503,1.0,
+200.0,hierarchical,campus-stitch,40.0,tp,True,0.0021700046993237978,460.8284951233577,
+200.0,hierarchical,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+200.0,hierarchical,campus-stitch,40.0,pp,True,0.43535505182801565,2.296975757605413,
+200.0,hierarchical,campus-stitch,40.0,dp,True,0.9310886807477275,1.0740115530101086,
+200.0,hierarchical,campus-stitch,40.0,checkpoint,True,0.8160851112020078,1.0,
+200.0,hierarchical,metro,500.0,tp,True,0.0021696625229325403,460.9011721548237,
+200.0,hierarchical,metro,500.0,cp,False,,,cp has degree 1 in this job
+200.0,hierarchical,metro,500.0,pp,True,0.4353259008276507,2.2971295714286217,
+200.0,hierarchical,metro,500.0,dp,True,0.9309636863836045,1.0741557534693669,
+200.0,hierarchical,metro,500.0,checkpoint,True,0.8160849240748113,1.0,
+200.0,hierarchical,region,40000.0,tp,True,0.0021406770899321573,467.141917248104,
+200.0,hierarchical,region,40000.0,cp,False,,,cp has degree 1 in this job
+200.0,hierarchical,region,40000.0,pp,True,0.432837194158689,2.310337497551966,
+200.0,hierarchical,region,40000.0,dp,True,0.9203542172124194,1.0865381842100021,
+200.0,hierarchical,region,40000.0,checkpoint,True,0.8160688562084321,1.0,
+200.0,blind,scale-up,0.5,tp,True,0.00031058198611408274,3219.7617528039136,
+200.0,blind,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+200.0,blind,scale-up,0.5,pp,True,0.04888914513382879,20.45443824518934,
+200.0,blind,scale-up,0.5,dp,True,0.22026873821954007,4.539908877143102,
+200.0,blind,scale-up,0.5,checkpoint,True,0.8160851272705462,1.0,
+200.0,blind,rail,3.0,tp,True,0.0003105817194100701,3219.764517690981,
+200.0,blind,rail,3.0,cp,False,,,cp has degree 1 in this job
+200.0,blind,rail,3.0,pp,True,0.04888911516336777,20.45445078435971,
+200.0,blind,rail,3.0,dp,True,0.22026390931357348,4.540008406807916,
+200.0,blind,rail,3.0,checkpoint,True,0.8160851262535503,1.0,
+200.0,blind,campus-stitch,40.0,tp,True,0.00031057777224423794,3219.8054380195676,
+200.0,blind,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+200.0,blind,campus-stitch,40.0,pp,True,0.0488886716048408,20.45463636408119,
+200.0,blind,campus-stitch,40.0,dp,True,0.2201924662522674,4.541481445847163,
+200.0,blind,campus-stitch,40.0,checkpoint,True,0.8160851112020078,1.0,
+200.0,blind,metro,500.0,tp,True,0.00031052870774773663,3220.3141772398294,
+200.0,blind,metro,500.0,cp,False,,,cp has degree 1 in this job
+200.0,blind,metro,500.0,pp,True,0.048883157765396826,20.45694357142932,
+200.0,blind,metro,500.0,dp,True,0.2193081094688803,4.559794904172932,
+200.0,blind,metro,500.0,checkpoint,True,0.8160849240748113,1.0,
+200.0,blind,region,40000.0,tp,True,0.0003063726060052137,3263.9993928927915,
+200.0,blind,region,40000.0,cp,False,,,cp has degree 1 in this job
+200.0,blind,region,40000.0,pp,True,0.0484142810886095,20.65506246327949,
+200.0,blind,region,40000.0,dp,True,0.16306926071007063,6.132363608233634,
+200.0,blind,region,40000.0,checkpoint,True,0.8160688562084321,1.0,
+400.0,hierarchical,scale-up,0.5,tp,True,0.00433079737306828,230.9043609887296,
+400.0,hierarchical,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+400.0,hierarchical,scale-up,0.5,pp,True,0.6067356412141158,1.6481642614548533,
+400.0,hierarchical,scale-up,0.5,dp,True,0.9646380487462818,1.0366582588149797,
+400.0,hierarchical,scale-up,0.5,checkpoint,True,0.8803738536221919,1.0,
+400.0,hierarchical,rail,3.0,tp,True,0.004330789964840221,230.90475597259623,
+400.0,hierarchical,rail,3.0,cp,False,,,cp has degree 1 in this job
+400.0,hierarchical,rail,3.0,pp,True,0.6067353334795089,1.6481650973995443,
+400.0,hierarchical,rail,3.0,dp,True,0.9646373194948873,1.0366590425131277,
+400.0,hierarchical,rail,3.0,checkpoint,True,0.8803738521604767,1.0,
+400.0,hierarchical,campus-stitch,40.0,tp,True,0.0043306803260282,230.91060173382286,
+400.0,hierarchical,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+400.0,hierarchical,campus-stitch,40.0,pp,True,0.606730779043825,1.6481774693809768,
+400.0,hierarchical,campus-stitch,40.0,dp,True,0.9646265267031631,1.0366706412457203,
+400.0,hierarchical,campus-stitch,40.0,checkpoint,True,0.8803738305270892,1.0,
+400.0,hierarchical,metro,500.0,tp,True,0.004329317712284009,230.98327876528887,
+400.0,hierarchical,metro,500.0,cp,False,,,cp has degree 1 in this job
+400.0,hierarchical,metro,500.0,pp,True,0.6066741620386551,1.648331283204185,
+400.0,hierarchical,metro,500.0,dp,True,0.9644923662122364,1.0368148417049783,
+400.0,hierarchical,metro,500.0,checkpoint,True,0.880373561571708,1.0,
+400.0,hierarchical,region,40000.0,tp,True,0.00421542465950325,237.22402385856918,
+400.0,hierarchical,region,40000.0,cp,False,,,cp has degree 1 in this job
+400.0,hierarchical,region,40000.0,pp,True,0.6018515809835913,1.6615392093275296,
+400.0,hierarchical,region,40000.0,dp,True,0.9531096069941756,1.0491972724456138,
+400.0,hierarchical,region,40000.0,checkpoint,True,0.8803504681958952,1.0,
+400.0,blind,scale-up,0.5,tp,True,0.0006209882223827541,1610.336499077171,
+400.0,blind,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+400.0,blind,scale-up,0.5,pp,True,0.09326214639573274,10.722463921822794,
+400.0,blind,scale-up,0.5,dp,True,0.3621157468656984,2.761547954364106,
+400.0,blind,scale-up,0.5,checkpoint,True,0.8803738536221919,1.0,
+400.0,blind,rail,3.0,tp,True,0.0006209871561712152,1610.339263964238,
+400.0,blind,rail,3.0,cp,False,,,cp has degree 1 in this job
+400.0,blind,rail,3.0,pp,True,0.09326203733231377,10.722476460993162,
+400.0,blind,rail,3.0,dp,True,0.36210269622867186,2.76164748402892,
+400.0,blind,rail,3.0,checkpoint,True,0.8803738521604767,1.0,
+400.0,blind,campus-stitch,40.0,tp,True,0.0006209713766685076,1610.3801842928244,
+400.0,blind,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+400.0,blind,campus-stitch,40.0,pp,True,0.09326042322353677,10.722662040714642,
+400.0,blind,campus-stitch,40.0,dp,True,0.3619096567273876,2.7631205230681672,
+400.0,blind,campus-stitch,40.0,checkpoint,True,0.8803738305270892,1.0,
+400.0,blind,metro,500.0,tp,True,0.0006207752660060277,1610.8889235130866,
+400.0,blind,metro,500.0,cp,False,,,cp has degree 1 in this job
+400.0,blind,metro,500.0,pp,True,0.0932403605894374,10.72496924806277,
+400.0,blind,metro,500.0,dp,True,0.3595267788807421,2.781433981393937,
+400.0,blind,metro,500.0,checkpoint,True,0.880373561571708,1.0,
+400.0,blind,region,40000.0,tp,True,0.0006043851262561302,1654.5741391660483,
+400.0,blind,region,40000.0,cp,False,,,cp has degree 1 in this job
+400.0,blind,region,40000.0,pp,True,0.09154920176337335,10.92308813991294,
+400.0,blind,region,40000.0,dp,True,0.22967372145650877,4.354002685454639,
+400.0,blind,region,40000.0,checkpoint,True,0.8803504681958952,1.0,
+800.0,hierarchical,scale-up,0.5,tp,True,0.008624748172141154,115.94541429396226,
+800.0,hierarchical,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+800.0,hierarchical,scale-up,0.5,pp,True,0.7554210236385663,1.3237651173426346,
+800.0,hierarchical,scale-up,0.5,dp,True,0.9823300408109377,1.0179878029327856,
+800.0,hierarchical,scale-up,0.5,checkpoint,True,0.8803738536221919,1.0,
+800.0,hierarchical,rail,3.0,tp,True,0.008624718790860337,115.94580927782891,
+800.0,hierarchical,rail,3.0,cp,False,,,cp has degree 1 in this job
+800.0,hierarchical,rail,3.0,pp,True,0.7554205465978984,1.323765953287326,
+800.0,hierarchical,rail,3.0,dp,True,0.9823292845645082,1.0179885866309335,
+800.0,hierarchical,rail,3.0,checkpoint,True,0.8803738521604767,1.0,
+800.0,hierarchical,campus-stitch,40.0,tp,True,0.008624283971308334,115.95165503905555,
+800.0,hierarchical,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+800.0,hierarchical,campus-stitch,40.0,pp,True,0.755413486466457,1.323778325268758,
+800.0,hierarchical,campus-stitch,40.0,dp,True,0.9823180922534916,1.018000185363526,
+800.0,hierarchical,campus-stitch,40.0,checkpoint,True,0.8803738305270892,1.0,
+800.0,hierarchical,metro,500.0,tp,True,0.00861888176518166,116.02433207052158,
+800.0,hierarchical,metro,500.0,cp,False,,,cp has degree 1 in this job
+800.0,hierarchical,metro,500.0,pp,True,0.755325722877202,1.3239321390919667,
+800.0,hierarchical,metro,500.0,dp,True,0.9821789658957641,1.018144385822784,
+800.0,hierarchical,metro,500.0,checkpoint,True,0.880373561571708,1.0,
+800.0,hierarchical,region,40000.0,tp,True,0.008178950385483115,122.26507716380186,
+800.0,hierarchical,region,40000.0,cp,False,,,cp has degree 1 in this job
+800.0,hierarchical,region,40000.0,pp,True,0.7478648093900143,1.3371400652153111,
+800.0,hierarchical,region,40000.0,dp,True,0.9703774651248573,1.0305268165634196,
+800.0,hierarchical,region,40000.0,checkpoint,True,0.8803504681958952,1.0,
+800.0,blind,scale-up,0.5,tp,True,0.0012412740417585535,805.6238722138,
+800.0,blind,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+800.0,blind,scale-up,0.5,pp,True,0.17075112579737733,5.856476760139519,
+800.0,blind,scale-up,0.5,dp,True,0.5340831881306118,1.8723674929746086,
+800.0,blind,scale-up,0.5,checkpoint,True,0.8803738536221919,1.0,
+800.0,blind,rail,3.0,tp,True,0.0012412697817423299,805.6266371008667,
+800.0,blind,rail,3.0,cp,False,,,cp has degree 1 in this job
+800.0,blind,rail,3.0,pp,True,0.17075076020677388,5.856489299309889,
+800.0,blind,rail,3.0,dp,True,0.5340547993151856,1.8724670226394227,
+800.0,blind,rail,3.0,checkpoint,True,0.8803738521604767,1.0,
+800.0,blind,campus-stitch,40.0,tp,True,0.0012412067369208465,805.667557429453,
+800.0,blind,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+800.0,blind,campus-stitch,40.0,pp,True,0.170745349648876,5.85667487903137,
+800.0,blind,campus-stitch,40.0,dp,True,0.5336349974311362,1.8739400616786694,
+800.0,blind,campus-stitch,40.0,checkpoint,True,0.8803738305270892,1.0,
+800.0,blind,metro,500.0,tp,True,0.0012404234708410205,806.1762966497151,
+800.0,blind,metro,500.0,cp,False,,,cp has degree 1 in this job
+800.0,blind,metro,500.0,pp,True,0.17067811187283224,5.8589820863794975,
+800.0,blind,metro,500.0,dp,True,0.5284704134135545,1.8922535200044395,
+800.0,blind,metro,500.0,checkpoint,True,0.880373561571708,1.0,
+800.0,blind,region,40000.0,tp,True,0.0011766622979437283,849.861512302677,
+800.0,blind,region,40000.0,cp,False,,,cp has degree 1 in this job
+800.0,blind,region,40000.0,pp,True,0.1650954810880954,6.057100978229665,
+800.0,blind,region,40000.0,dp,True,0.2886150963401345,3.4648222240651414,
+800.0,blind,region,40000.0,checkpoint,True,0.8803504681958952,1.0,
+1600.0,hierarchical,scale-up,0.5,tp,True,0.017103975131670557,58.46594094657861,
+1600.0,hierarchical,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+1600.0,hierarchical,scale-up,0.5,pp,True,0.8609070784320898,1.1615655452865254,
+1600.0,hierarchical,scale-up,0.5,dp,True,0.9914216498264928,1.0086525749916884,
+1600.0,hierarchical,scale-up,0.5,checkpoint,True,0.8803738536221919,1.0,
+1600.0,hierarchical,rail,3.0,tp,True,0.017103859581514638,58.466335930445275,
+1600.0,hierarchical,rail,3.0,cp,False,,,cp has degree 1 in this job
+1600.0,hierarchical,rail,3.0,pp,True,0.8609064588629343,1.1615663812312167,
+1600.0,hierarchical,rail,3.0,dp,True,0.9914208795169467,1.0086533586898365,
+1600.0,hierarchical,rail,3.0,checkpoint,True,0.8803738521604767,1.0,
+1600.0,hierarchical,campus-stitch,40.0,tp,True,0.01710214962173078,58.47218169167189,
+1600.0,hierarchical,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+1600.0,hierarchical,campus-stitch,40.0,pp,True,0.8608972893436966,1.1615787532126487,
+1600.0,hierarchical,campus-stitch,40.0,dp,True,0.991409479075617,1.0086649574224291,
+1600.0,hierarchical,campus-stitch,40.0,checkpoint,True,0.8803738305270892,1.0,
+1600.0,hierarchical,metro,500.0,tp,True,0.017080919175653974,58.54485872313794,
+1600.0,hierarchical,metro,500.0,cp,False,,,cp has degree 1 in this job
+1600.0,hierarchical,metro,500.0,pp,True,0.8607833062229496,1.1617325670358576,
+1600.0,hierarchical,metro,500.0,dp,True,0.9912677657484943,1.0088091578816871,
+1600.0,hierarchical,metro,500.0,checkpoint,True,0.880373561571708,1.0,
+1600.0,hierarchical,region,40000.0,tp,True,0.015435527973678875,64.7856038164182,
+1600.0,hierarchical,region,40000.0,cp,False,,,cp has degree 1 in this job
+1600.0,hierarchical,region,40000.0,pp,True,0.8511069333487532,1.1749404931592018,
+1600.0,hierarchical,region,40000.0,dp,True,0.9792481755055269,1.0211915886223226,
+1600.0,hierarchical,region,40000.0,checkpoint,True,0.8803504681958952,1.0,
+1600.0,blind,scale-up,0.5,tp,True,0.002479743233053618,403.2675587821143,
+1600.0,blind,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+1600.0,blind,scale-up,0.5,pp,True,0.29210016454793525,3.4234831792978824,
+1600.0,blind,scale-up,0.5,dp,True,0.7003893579333309,1.42777726227986,
+1600.0,blind,scale-up,0.5,checkpoint,True,0.8803738536221919,1.0,
+1600.0,blind,rail,3.0,tp,True,0.002479726231529848,403.27032366918087,
+1600.0,blind,rail,3.0,cp,False,,,cp has degree 1 in this job
+1600.0,blind,rail,3.0,pp,True,0.29209909467841305,3.4234957184682524,
+1600.0,blind,rail,3.0,dp,True,0.7003405375319995,1.4278767919446738,
+1600.0,blind,rail,3.0,checkpoint,True,0.8803738521604767,1.0,
+1600.0,blind,campus-stitch,40.0,tp,True,0.0024794746362328947,403.31124399776724,
+1600.0,blind,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+1600.0,blind,campus-stitch,40.0,pp,True,0.2920832615257585,3.4236812981897327,
+1600.0,blind,campus-stitch,40.0,dp,True,0.6996187905319377,1.4293498309839205,
+1600.0,blind,campus-stitch,40.0,checkpoint,True,0.8803738305270892,1.0,
+1600.0,blind,metro,500.0,tp,True,0.00247635095230065,403.8199832180295,
+1600.0,blind,metro,500.0,cp,False,,,cp has degree 1 in this job
+1600.0,blind,metro,500.0,pp,True,0.29188656015149284,3.4259885055378607,
+1600.0,blind,metro,500.0,dp,True,0.6907683626327528,1.4476632893096903,
+1600.0,blind,metro,500.0,checkpoint,True,0.880373561571708,1.0,
+1600.0,blind,region,40000.0,tp,True,0.002234610910717674,447.5051988709913,
+1600.0,blind,region,40000.0,cp,False,,,cp has degree 1 in this job
+1600.0,blind,region,40000.0,pp,True,0.275930012648279,3.6241073973880282,
+1600.0,blind,region,40000.0,dp,True,0.3311003930145319,3.020231993370392,
+1600.0,blind,region,40000.0,checkpoint,True,0.8803504681958952,1.0,
+3200.0,hierarchical,scale-up,0.5,tp,True,0.033640352828769954,29.726204272886772,
+3200.0,hierarchical,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+3200.0,hierarchical,scale-up,0.5,pp,True,0.925526784565857,1.080465759258471,
+3200.0,hierarchical,scale-up,0.5,dp,True,0.9960308558635311,1.0039849610211398,
+3200.0,hierarchical,scale-up,0.5,checkpoint,True,0.8803738536221919,1.0,
+3200.0,hierarchical,rail,3.0,tp,True,0.03363990584199822,29.72659925675344,
+3200.0,hierarchical,rail,3.0,cp,False,,,cp has degree 1 in this job
+3200.0,hierarchical,rail,3.0,pp,True,0.9255260684963313,1.0804665952031622,
+3200.0,hierarchical,rail,3.0,dp,True,0.9960300783748653,1.003985744719288,
+3200.0,hierarchical,rail,3.0,checkpoint,True,0.8803738521604767,1.0,
+3200.0,hierarchical,campus-stitch,40.0,tp,True,0.03363329182632883,29.73244501798006,
+3200.0,hierarchical,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+3200.0,hierarchical,campus-stitch,40.0,pp,True,0.9255154707969017,1.0804789671845942,
+3200.0,hierarchical,campus-stitch,40.0,dp,True,0.9960185716845253,1.0039973434518805,
+3200.0,hierarchical,campus-stitch,40.0,checkpoint,True,0.8803738305270892,1.0,
+3200.0,hierarchical,metro,500.0,tp,True,0.033551280157183054,29.8051220494461,
+3200.0,hierarchical,metro,500.0,cp,False,,,cp has degree 1 in this job
+3200.0,hierarchical,metro,500.0,pp,True,0.9253837358768587,1.0806327810078027,
+3200.0,hierarchical,metro,500.0,dp,True,0.9958755377304607,1.0041415439111385,
+3200.0,hierarchical,metro,500.0,checkpoint,True,0.880373561571708,1.0,
+3200.0,hierarchical,region,40000.0,tp,True,0.027742431498191552,36.04586714272637,
+3200.0,hierarchical,region,40000.0,cp,False,,,cp has degree 1 in this job
+3200.0,hierarchical,region,40000.0,pp,True,0.9142098968164509,1.0938407071311473,
+3200.0,hierarchical,region,40000.0,dp,True,0.9837446286916798,1.016523974651774,
+3200.0,hierarchical,region,40000.0,checkpoint,True,0.8803504681958952,1.0,
+3200.0,blind,scale-up,0.5,tp,True,0.004948305006474655,202.08940206627136,
+3200.0,blind,scale-up,0.5,cp,False,,,cp has degree 1 in this job
+3200.0,blind,scale-up,0.5,pp,True,0.4531065551830657,2.2069863888770636,
+3200.0,blind,scale-up,0.5,dp,True,0.8295436000812099,1.2054821469324852,
+3200.0,blind,scale-up,0.5,checkpoint,True,0.8803738536221919,1.0,
+3200.0,blind,rail,3.0,tp,True,0.0049482373071436,202.09216695333802,
+3200.0,blind,rail,3.0,cp,False,,,cp has degree 1 in this job
+3200.0,blind,rail,3.0,pp,True,0.4531039808364182,2.206998928047434,
+3200.0,blind,rail,3.0,dp,True,0.8294751151348415,1.2055816765972993,
+3200.0,blind,rail,3.0,checkpoint,True,0.8803738521604767,1.0,
+3200.0,blind,campus-stitch,40.0,tp,True,0.004947235573586495,202.13308728192433,
+3200.0,blind,campus-stitch,40.0,cp,False,,,cp has degree 1 in this job
+3200.0,blind,campus-stitch,40.0,pp,True,0.4530658839259564,2.207184507768914,
+3200.0,blind,campus-stitch,40.0,dp,True,0.8284628584319356,1.2070547156365459,
+3200.0,blind,campus-stitch,40.0,checkpoint,True,0.8803738305270892,1.0,
+3200.0,blind,metro,500.0,tp,True,0.004934815369862495,202.64182650218666,
+3200.0,blind,metro,500.0,cp,False,,,cp has degree 1 in this job
+3200.0,blind,metro,500.0,pp,True,0.45259278102657535,2.2094917151170423,
+3200.0,blind,metro,500.0,dp,True,0.8160812572489361,1.2253681739623161,
+3200.0,blind,metro,500.0,checkpoint,True,0.880373561571708,1.0,
+3200.0,blind,region,40000.0,tp,True,0.004059643599220228,246.32704215514855,
+3200.0,blind,region,40000.0,cp,False,,,cp has degree 1 in this job
+3200.0,blind,region,40000.0,pp,True,0.41534955740192064,2.40761060696721,
+3200.0,blind,region,40000.0,dp,True,0.3574062044982893,2.797936878023018,
+3200.0,blind,region,40000.0,checkpoint,True,0.8803504681958952,1.0,

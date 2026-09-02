@@ -18,3 +18,10 @@ jobs:
         run: PYTHONPATH=src python -m pytest tests/ -q
       - name: External validation against published measurements
         run: python validation/validate_llama3.py
+      - name: Span-tier validation registry, and what it declines
+        run: python validation/validate_span.py
+      - name: Span experiments and figures reproduce
+        run: |
+          python experiments/run_span_experiments.py
+          python figures/palette_check.py
+          python figures/make_span_figures.py

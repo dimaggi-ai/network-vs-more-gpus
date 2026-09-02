@@ -1,0 +1,10 @@
+{
+  "experiment": "s1_regime_atlas",
+  "netcap_version": "1.0.0",
+  "git_commit": "f93e0f2fadf1ae7a7ce905c650820ff82b495a44",
+  "seed": 20260901,
+  "baseline_scenario": "reference_405b_16k",
+  "baseline_digest": "87d1f18a1bb8d717",
+  "rows": 300,
+  "notes": "Useful-capacity retention for every (width, placement, regime, cut). Retention is spanned UCF over hall-local UCF with the plan, the world size, and every reliability parameter held fixed."
+}

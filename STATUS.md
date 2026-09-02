@@ -1,10 +1,18 @@
 # Status
 
-Last updated: 2026-08-06.
+Last updated: 2026-09-01.
 
 ## Current phase
 
-**Published.** Approved by the project owner on 2026-08-06 after a multi-iteration quality pass; released as v1.0.0 at https://github.com/dimaggi-ai/network-vs-more-gpus. The arXiv submission remains pending (needs the owner's arXiv account).
+**Published, with a scale-across extension added 2026-09-01.** The v1.0.0 body of
+work was approved by the project owner on 2026-08-06 after a multi-iteration
+quality pass and released at https://github.com/dimaggi-ai/network-vs-more-gpus.
+Nothing in it has moved: the span tier added in phase 11 is inert when
+`halls == 1`, and both the Llama 3 validation program and the published step
+times reproduce byte-identically.
+
+Preprint-server submission is no longer planned; that line is withdrawn rather
+than pending.
 
 ## Completed
 
@@ -20,6 +28,7 @@ Last updated: 2026-08-06.
 | 8. Paper | `paper/main.tex`, compiled and inspected, 12 pages |
 | 9. Article | `article/article.md`, 2,032 words |
 | 10. Publication checks | See below |
+| 11. Scale-across span tier | `docs/regime-atlas.md`, `src/netcap/regimes.py`, `validation/validate_span.py`, 7 span experiments, fig8-fig9, D16-D18, A18-A22, S20 |
 
 ## Decision gates
 
@@ -30,6 +39,7 @@ Last updated: 2026-08-06.
 | 3. Accounting correctness | Pass | Time conservation asserted on every evaluation; limiting cases and monotonicity tested. |
 | 4. Finding robustness | Pass | Rank reversals survive the uncertainty analysis; out-of-scope rows excluded; the one load-bearing out-of-scope claim computed with both implementations, which agree to 0.03 percent. |
 | 5. Publication integrity | Pass | Each headline claim tagged validated, extrapolated, or unsupported in the validation report. No absolute cost claim anywhere. |
+| 6. Span-tier evidential honesty (phase 11) | Pass | 16-point registry split 2 calibrated / 7 emergent / 7 sanity, with a printed 10-entry DECLINED list. Seven mutation tests delete span machinery and require the registry to go red, each printing its actual red set; `test_registry_blind_spots` prints the points no mutation kills. Two anchors were demoted mid-build rather than kept: see D18. |
 
 ## Phase 10 checklist
 
@@ -79,6 +89,22 @@ make reproduce
 
 Run 2026-08-06 from a fresh clone with a newly built virtual environment. Regenerated 9 raw result sets, 6 processed tables, 7 figures, and the paper PDF, byte-identical to the committed results. Total runtime under a minute plus the LaTeX build.
 
+Phase 11 re-verified 2026-09-01: 83 tests pass, `validate_llama3.py` reports
+`all_checks_pass`, `validate_span.py` reports 16 of 16, and `make smoke-test`
+completes end to end. `make reproduce` now also runs the span experiments,
+registry, and figures.
+
 ## Continuation instruction
 
-If work resumes in a new session: the research is complete, published at v1.0.0, and no phase needs redoing. Read this file and `DECISIONS.md` (through D15) first. The outstanding items are the three open decisions above, all gated on the owner's input.
+If work resumes in a new session: the v1.0.0 research is complete and no phase
+needs redoing. Read this file and `DECISIONS.md` (through D18) first.
+
+Phase 11 added the span tier and the latency-regime atlas. Its headline is that
+rank placement, not fiber length, sets the cost of spreading a job across halls
+--- a 1,000x change in round-trip time costs the data-parallel cut 1.2 points,
+while reordering the ranks at fixed distance costs it 2.7x and the pipeline cut
+6.5x. Start at `docs/regime-atlas.md`, then the DECLINED list printed by
+`validation/validate_span.py`, which is where the model's limits are recorded.
+
+The paper and article still describe v1.0.0 only and were deliberately not
+touched; folding the atlas into them is a separate decision for the owner.

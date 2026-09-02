@@ -119,6 +119,23 @@ Status codes: [P] peer-reviewed or conference-accepted, [A] arXiv preprint, [V] 
 - 175B-parameter training across two DCs 120 km apart; up to 99.41% (PP) and 98.95% (DP) relative training efficiency.
 - Use in project: shows high-bandwidth metro pooling can be near-lossless; boundary datapoint between metro and WAN regimes.
 
+### S20. Papavasileiou et al. (Corning), "Geo-distributed AI training: distance, not bandwidth, is the binding constraint", submitted to ECOC 2026 [A]
+- arXiv: https://arxiv.org/html/2605.19169 (search-level inspection)
+- **Preprint, not peer-reviewed.** ASTRA-sim, GPT-3 175B, up to 8,192 GPUs. Reports:
+  near-complete compute-communication overlap below 10 km; ~26x step-time penalty at
+  1,000 km on H100-class nodes (~4x on A100, because faster compute exposes more
+  latency); doubling inter-DC bandwidth improves overlap by at most 0.66%; optimal
+  inter-DC separation 10-100 km.
+- Use in project: the span tier's short-distance behaviour is checked against the
+  <10 km claim in `validation/validate_span.py`. Three of its four headline numbers
+  are **declined** rather than reproduced, for reasons recorded in that program's
+  DECLINED list: the parallel plan, global batch, and ring construction behind the
+  26x figure are not published, and the bandwidth-doubling claim is conditional on a
+  circuit width the preprint does not state -- this model produces anywhere from 21%
+  down to 0% gain for that same doubling depending on the width assumed.
+- Also cited as [6] in the sibling repository `edge-continuum-placement`, which
+  likewise declines the 26x magnitude.
+
 ## Recovery systems (context for intervention parameters)
 
 ### S19. TrainMover (UCCL project blog, inspected via search 2026-08-05), Gemini (SOSP 2023, Amazon Science page), FFTrainer (arXiv 2512.03644), ElasWave (arXiv 2510.00606), LowDiff (arXiv 2509.04084) [A]
