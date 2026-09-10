@@ -1,0 +1,217 @@
+{
+  "schema_version": "dimaggi-evidence/v1",
+  "coverage_scope": "Consequential headline claims, governing assumptions and model limits. Not a catalog of helper constants or proof that citations are correct.",
+  "sources": {
+    "configs/scenarios/reference_405b_16k.yaml": {
+      "source_type": "model-assumption",
+      "location": "configs/scenarios/reference_405b_16k.yaml",
+      "version_date": "2026-09-10 closure working tree; SHA-256 bound below",
+      "license_or_reuse": "Repository-authored analysis; third-party facts referenced, no new external raw data redistributed",
+      "scope": "Local authoritative definition or claim. External provenance retained in SOURCES/REFERENCES and inline citations; scenario choices are not empirical measurements."
+    },
+    "src/netcap/wan.py": {
+      "source_type": "model-assumption",
+      "location": "src/netcap/wan.py",
+      "version_date": "2026-09-10 closure working tree; SHA-256 bound below",
+      "license_or_reuse": "Repository-authored analysis; third-party facts referenced, no new external raw data redistributed",
+      "scope": "Local authoritative definition or claim. External provenance retained in SOURCES/REFERENCES and inline citations; scenario choices are not empirical measurements."
+    },
+    "results/wan-regimes.json": {
+      "source_type": "experiment-output",
+      "location": "results/wan-regimes.json",
+      "version_date": "2026-09-10 closure working tree; SHA-256 bound below",
+      "license_or_reuse": "Repository-authored analysis; third-party facts referenced, no new external raw data redistributed",
+      "scope": "Local authoritative definition or claim. External provenance retained in SOURCES/REFERENCES and inline citations; scenario choices are not empirical measurements."
+    },
+    "SOURCES.md": {
+      "source_type": "model-assumption",
+      "location": "SOURCES.md",
+      "version_date": "2026-09-10 closure working tree; SHA-256 bound below",
+      "license_or_reuse": "Repository-authored analysis; third-party facts referenced, no new external raw data redistributed",
+      "scope": "Local authoritative definition or claim. External provenance retained in SOURCES/REFERENCES and inline citations; scenario choices are not empirical measurements."
+    },
+    "llama": {
+      "source_type": "primary-publication",
+      "location": "https://arxiv.org/abs/2407.21783",
+      "version_date": "2024 paper; baseline ledger inspected 2026-08-05",
+      "license_or_reuse": "Facts/aggregates with attribution only; Reported Llama architecture and throughput anchor; source claim scope in SOURCES.md",
+      "scope": "Reported Llama architecture and throughput anchor; source claim scope in SOURCES.md"
+    },
+    "rsc": {
+      "source_type": "primary-publication",
+      "location": "https://arxiv.org/abs/2410.21680",
+      "version_date": "HPCA 2025; baseline ledger v2",
+      "license_or_reuse": "Facts/aggregates with attribution only; Published reliability observations transferred to model",
+      "scope": "Published reliability observations transferred to model"
+    }
+  },
+  "inputs": [
+    {
+      "name": "network efficiency",
+      "unit": "fraction",
+      "evidence_class": "scenario",
+      "sources": [
+        "configs/scenarios/reference_405b_16k.yaml"
+      ],
+      "transformation": "Applied to nominal link bandwidth; not measured line-rate efficiency",
+      "uncertainty": "Deliberately hypothetical/operator policy; not an observed universal bound",
+      "affected_outputs": [
+        "published conclusion",
+        "results/wan-regimes.json"
+      ],
+      "value": 0.85,
+      "valid_bounds": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "kernel efficiency",
+      "unit": "fraction",
+      "evidence_class": "calibrated",
+      "sources": [
+        "configs/scenarios/reference_405b_16k.yaml",
+        "llama"
+      ],
+      "transformation": "Fit to published 8192-GPU anchor; does not validate all scales",
+      "uncertainty": "Scope and qualifications stated in transformation and linked source; no unreported confidence interval",
+      "affected_outputs": [
+        "published conclusion",
+        "results/wan-regimes.json"
+      ],
+      "value": 0.5706,
+      "valid_bounds": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "cross-pod oversubscription",
+      "unit": "ratio",
+      "evidence_class": "external-observed",
+      "sources": [
+        "configs/scenarios/reference_405b_16k.yaml",
+        "llama"
+      ],
+      "transformation": "Reported reference topology; see SOURCES.md, not a universal fabric",
+      "uncertainty": "Scope and qualifications stated in transformation and linked source; no unreported confidence interval",
+      "affected_outputs": [
+        "published conclusion",
+        "results/wan-regimes.json"
+      ],
+      "value": 7,
+      "valid_bounds": [
+        0,
+        700
+      ]
+    },
+    {
+      "name": "node failure rate",
+      "unit": "failures/node-day",
+      "evidence_class": "calibrated",
+      "sources": [
+        "configs/scenarios/reference_405b_16k.yaml",
+        "rsc"
+      ],
+      "transformation": "Transferred published rate to model; independence and recovery assumptions remain",
+      "uncertainty": "Scope and qualifications stated in transformation and linked source; no unreported confidence interval",
+      "affected_outputs": [
+        "published conclusion",
+        "results/wan-regimes.json"
+      ],
+      "value": 0.005,
+      "valid_bounds": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "checkpoint write",
+      "unit": "seconds",
+      "evidence_class": "scenario",
+      "sources": [
+        "configs/scenarios/reference_405b_16k.yaml"
+      ],
+      "transformation": "Blocking-write assumption affects lost work",
+      "uncertainty": "Deliberately hypothetical/operator policy; not an observed universal bound",
+      "affected_outputs": [
+        "published conclusion",
+        "results/wan-regimes.json"
+      ],
+      "value": 20,
+      "valid_bounds": [
+        0,
+        2000
+      ]
+    },
+    {
+      "name": "DP overlap",
+      "unit": "fraction",
+      "evidence_class": "scenario",
+      "sources": [
+        "configs/scenarios/reference_405b_16k.yaml"
+      ],
+      "transformation": "Communication overlap assumption; not external validation",
+      "uncertainty": "Deliberately hypothetical/operator policy; not an observed universal bound",
+      "affected_outputs": [
+        "published conclusion",
+        "results/wan-regimes.json"
+      ],
+      "value": 0.85,
+      "valid_bounds": [
+        0,
+        1
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "four-fate conservation",
+      "unit": "claim",
+      "evidence_class": "sanity-bound",
+      "sources": [
+        "configs/scenarios/reference_405b_16k.yaml"
+      ],
+      "transformation": "P+B+D+U equals nominal accelerator-seconds; this is an accounting identity, not empirical capacity validation",
+      "uncertainty": "Scope and qualifications stated in transformation and linked source; no unreported confidence interval",
+      "affected_outputs": [
+        "published conclusion",
+        "results/wan-regimes.json"
+      ],
+      "statement": "P+B+D+U equals nominal accelerator-seconds; this is an accounting identity, not empirical capacity validation"
+    },
+    {
+      "name": "WAN regimes",
+      "unit": "claim",
+      "evidence_class": "simulated",
+      "sources": [
+        "results/wan-regimes.json"
+      ],
+      "transformation": "432 scenario comparisons of communication/service bounds, without convergence or ROI equivalence",
+      "uncertainty": "Conditional model result; not production outcome or empirical confidence interval",
+      "affected_outputs": [
+        "published conclusion",
+        "results/wan-regimes.json"
+      ],
+      "statement": "432 scenario comparisons of communication/service bounds, without convergence or ROI equivalence"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "configs/scenarios/reference_405b_16k.yaml",
+      "sha256": "270cd37a0c19589424fa40a9639a94a70b01bd902b4243f4d34fdcfc33b188fc"
+    },
+    {
+      "path": "src/netcap/wan.py",
+      "sha256": "9d951ea0cc2b2ba8329b2e8e689899b2c648b6261178829239cf387efb21e5a8"
+    },
+    {
+      "path": "results/wan-regimes.json",
+      "sha256": "e4cdbaa2e7688826f9e091bad66534644bc746c1a3182e534a5df9ea2d284944"
+    },
+    {
+      "path": "SOURCES.md",
+      "sha256": "415df24310fc86e17bc03eeae720b8e679da91c333ea0ec23ebf15f884d1b19a"
+    }
+  ]
+}

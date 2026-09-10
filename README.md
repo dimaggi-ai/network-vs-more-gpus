@@ -1,5 +1,9 @@
 # GPU Cluster Networking: How Interconnect Bandwidth Caps AI Training Throughput at Scale
 
+For a bounded offline comparison of normalized collective benchmark observations,
+see [observability](docs/observability.md). It reports regressions without claiming
+fabric root cause, live collection or automatic calibration of this model.
+
 **When is improving the network, reliability, or recovery of an accelerator fleet worth more than buying more accelerators, and where does that answer change?**
 
 This repository contains the model, experiments, validation, paper, and article for a study of that question. It is a research artifact, not a product.

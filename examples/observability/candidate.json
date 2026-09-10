@@ -1,0 +1,24 @@
+{
+  "schema_version": "netcap-collective-observation/v1",
+  "evidence_kind": "synthetic",
+  "source": "examples/observability/candidate.json — invented demonstration, not hardware measurements",
+  "context": {
+    "collective": "all-reduce",
+    "dtype": "float",
+    "ranks": 8,
+    "hardware_id": "abstract",
+    "topology_id": "one-pod",
+    "transport": "fixture",
+    "library_version": "fixture-v1",
+    "protocol_id": "same-warmup-iterations-load"
+  },
+  "samples": [
+    {
+      "size_bytes": 1048576,
+      "mode": "out-of-place",
+      "algbw_GBps": 75,
+      "busbw_GBps": 131.25,
+      "wrong_elements": 0
+    }
+  ]
+}
