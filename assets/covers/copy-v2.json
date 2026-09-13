@@ -1,0 +1,19 @@
+[
+  {
+    "repo": "network-vs-more-gpus",
+    "label": "AI INFRASTRUCTURE RESEARCH",
+    "title": [
+      "Network capacity",
+      "is sometimes",
+      "compute capacity"
+    ],
+    "subtitle": [
+      "An accounting framework for",
+      "AI infrastructure investment."
+    ],
+    "fontSize": 58,
+    "background": "illustration-v2.png",
+    "output": ".",
+    "source_readme_commit": "d9db4fa4c59901c2be55ba82ee904885d5deb822"
+  }
+]

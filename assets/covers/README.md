@@ -1,49 +1,46 @@
-# Cover artwork — network-vs-more-gpus
+# Research cover — network-vs-more-gpus
 
-![Two banks of graphite compute modules joined through a narrow copper interconnect.](social-preview-v1.jpg)
+![AI infrastructure research. Network capacity is sometimes compute capacity. An accounting framework for AI infrastructure investment.](social-preview-v2.jpg)
 
-Unbranded conceptual illustration for this project. These miniature physical models
-communicate the subject; they are not engineering diagrams or photographs of deployed hardware.
+**Network capacity is sometimes compute capacity**
+
+An accounting framework for AI infrastructure investment.
+
+The cover labels the field as **AI INFRASTRUCTURE RESEARCH**. Its headline and
+description explain the research contribution, with a quiet supporting illustration.
 
 | File | Use | Dimensions |
 | --- | --- | --- |
-| [social-preview-v1.jpg](social-preview-v1.jpg) | GitHub social preview | 1280 × 640 |
-| [linkedin-v1.jpg](linkedin-v1.jpg) | Website sharing / LinkedIn artwork | 1200 × 627 |
-| [cover-v1.png](cover-v1.png) | Full-resolution master | 1774 × 887 |
+| [social-preview-v2.jpg](social-preview-v2.jpg) | GitHub social preview | 1280 × 640 |
+| [linkedin-v2.jpg](linkedin-v2.jpg) | Website sharing / LinkedIn artwork | 1200 × 627 |
+| [cover-v2.png](cover-v2.png) | Master with high-resolution typography | 2560 × 1280 |
+| [illustration-v2.png](illustration-v2.png) | Original supporting illustration | 1774 × 887 |
 
-Both JPEG exports are below 1 MB. The LinkedIn export removes a small amount from
-the sides to fit its recommended aspect ratio; the subject is preserved.
+Both sharing JPEGs are below 1 MB. Each aspect ratio is typeset separately.
+Earlier v1 artwork remains available for reference.
 
-## Activate the repository preview
+## Exact copy and production
 
-Committing these files does not configure GitHub's social preview.
-Open [repository settings](https://github.com/dimaggi-ai/network-vs-more-gpus/settings),
-find **Social preview → Edit → Upload an image**, and select `social-preview-v1.jpg`.
-See [GitHub's instructions](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/customizing-your-repositorys-social-media-preview).
+[copy-v2.json](copy-v2.json) stores the exact wording, line breaks, type size,
+and README commit used to check the description. All lettering is rendered with
+Arial fonts using the [shared Swift renderer](https://github.com/dimaggi-ai/usable-compute/blob/main/tools/cover_artwork/render.swift).
+The illustration contains no generated lettering. It is conceptual artwork,
+not a measured engineering diagram or a photograph of deployed equipment.
 
-For a website link, use `linkedin-v1.jpg` as the page's public `og:image`, with
-its own title, description and canonical URL. See [LinkedIn's requirements](https://www.linkedin.com/help/linkedin/answer/a521928/making-your-website-shareable-on-linkedin).
-Then check a fresh link in [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/)
-and inspect the actual Featured card. Cached or existing cards may need to be re-added.
+The supporting image was created with Codex's built-in image tool using
+[this prompt](PROMPT-v2.md). The final exports were proofread, checked with OCR,
+and visually reviewed at full size and thumbnail size.
+See the [portfolio cover strategy](https://github.com/dimaggi-ai/usable-compute/blob/main/COVER_STRATEGY.md).
 
-## Production notes
+## Replace a sharing preview
 
-Created with Codex's built-in image generation tool. Final artwork was visually
-reviewed. Exported with macOS `sips` for dimensions and JPEG compression.
-No text, logo, author name, date, neon lighting or performance claims appear in the image.
+Open [repository settings](https://github.com/dimaggi-ai/network-vs-more-gpus/settings), then
+**Social preview → Edit → Upload an image**, and select `social-preview-v2.jpg`.
+A commit alone does not update GitHub's configured preview.
 
-Style reference: None; this image established the series style.
+For a website link, use `linkedin-v2.jpg` as its public `og:image`, with the page's
+own title, description, and canonical URL. Check the exact shared URL in
+[LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) and review
+the actual Featured card. Existing cards may retain cached images.
 
-Alt text: Two banks of graphite compute modules joined through a narrow copper interconnect.
-
-### Generation prompt
-
-```text
-Use case: stylized-concept.
-Asset type: understated editorial cover for an open-source study of GPU cluster networking, to appear as a small GitHub/LinkedIn thumbnail.
-Create one finished, original raster illustration, landscape 2:1 aspect ratio, ideally 1280 x 640 pixels. This is visual artwork, with absolutely no text.
-Concept: the connection between compute resources determines their usable capacity. An elegant physical engineering maquette on a warm off-white surface: two modest banks of three low-profile accelerator modules, connected across one visibly narrow central interconnect. Six modules total, no sprawling data center. The modules are simplified machined graphite housings with fine parallel cooling fins, not branded hardware. A few carefully spaced flat conductors in muted oxidized copper meet at the narrow passage and emerge on the other side. The interconnect, not a wall of hardware, is the focal point.
-Medium: tactile architectural model photographed as a considered editorial still life; precise geometry, matte graphite, brushed pale metal, warm paper-colored background. Broad diffuse daylight, quiet contact shadows, subtle real surface texture, no glossy CGI plastic. Slightly elevated oblique view, generous approximately 40 percent negative space. Complete subject contained in the central 75 percent of the canvas, crop-safe margins.
-Palette: warm chalk, charcoal, cool gray, small desaturated copper accent; very low color saturation. At thumbnail scale the two banks and the single constriction must read clearly.
-Constraints: no words, labels, numbers, captions, author name, dates, company branding, logos, watermarks, charts, arrows, brains, robots, decorative circuitry, particles, lens flare, bloom, glowing lights, neon, purple/cyan gradients, or futuristic cityscapes. No overcrowding. No generic AI stock-art treatment. Sparse and intellectually clear, with the craftsmanship of a high-quality architecture journal illustration.
-```
+References: [GitHub social previews](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/customizing-your-repositorys-social-media-preview) · [LinkedIn image requirements](https://www.linkedin.com/help/linkedin/answer/a521928/making-your-website-shareable-on-linkedin).
