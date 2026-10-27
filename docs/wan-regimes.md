@@ -13,6 +13,14 @@ reports `status="disconnected"`, zero useful compute fraction and null
 communication/cycle times; convergence remains unvalidated. A single site
 needs no WAN exchange and stays modeled at zero bandwidth health.
 
+Finite inputs can still exceed floating-point result range, for example with
+extremely small positive health or very large local compute intervals.
+`evaluate` raises an actionable `ValueError` instead of returning infinite or
+NaN modeled fields. Correct the workload scale or bandwidth assumptions before
+retrying. No minimum-health threshold or clamping is applied: tiny and subnormal
+values remain supported when the result is finite, including local single-site
+operation. Existing finite results and disconnected null fields are unchanged.
+
 The synchronous schedule exchanges every step. The periodic schedule exchanges
 after a declared number of local steps. The hierarchical schedule adds a local
 reduction cost before the inter-site exchange. The decoupled schedule is an
@@ -25,7 +33,8 @@ model reports compute-service fraction, not convergence-adjusted training
 goodput. No UET, NCCL or production WAN implementation is exercised.
 
 `required_bandwidth` inverts this same model for a target service fraction;
-it returns no answer when the target exceeds the declared search bound.
+it returns `None` when the target exceeds the declared search bound. A numeric-
+range refusal propagates as `ValueError`, distinct from an unreachable target.
 Latency or failure overhead can make a target unreachable even with more
 bandwidth. Tests cover the two-site analytical case, degradation, zero-link
 capacity, local operation and inversion consistency.

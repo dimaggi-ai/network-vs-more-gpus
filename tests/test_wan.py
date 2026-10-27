@@ -60,3 +60,67 @@ def test_single_site_zero_bandwidth_remains_modeled(regime):
     assert local['communication_s'] == 0
     assert local['convergence_validated'] is False
     assert json.loads(json.dumps(local, allow_nan=False)) == local
+
+
+@pytest.mark.parametrize('regime', ['synchronous', 'periodic', 'hierarchical', 'decoupled'])
+def test_unrepresentable_communication_refused_then_corrected(regime):
+    w = WANWorkload()
+    healthy = evaluate(w, regime)
+    with pytest.raises(ValueError, match='finite numeric range'):
+        evaluate(dataclasses.replace(w, bandwidth_health=math.nextafter(0., 1.)), regime)
+    assert evaluate(w, regime) == healthy
+    assert json.loads(json.dumps(healthy, allow_nan=False)) == healthy
+
+
+@pytest.mark.parametrize('regime', ['synchronous', 'periodic', 'hierarchical', 'decoupled'])
+@pytest.mark.parametrize('health', [1e-300, 1e-308])
+def test_tiny_and_subnormal_health_with_finite_results_remain_modeled(regime, health):
+    result = evaluate(WANWorkload(bandwidth_health=health), regime)
+    assert result['status'] == 'modeled'
+    assert result['communication_s'] > 1e290
+    assert result['useful_compute_fraction'] > 0
+    assert json.loads(json.dumps(result, allow_nan=False)) == result
+
+
+@pytest.mark.parametrize('regime', ['synchronous', 'periodic', 'hierarchical', 'decoupled'])
+def test_single_site_minimum_positive_health_needs_no_exchange(regime):
+    w = WANWorkload(sites=1)
+    result = evaluate(dataclasses.replace(w, bandwidth_health=math.nextafter(0., 1.)), regime)
+    assert result == evaluate(w, regime)
+    assert result['communication_s'] == 0
+    assert json.loads(json.dumps(result, allow_nan=False)) == result
+
+
+@pytest.mark.parametrize('regime', ['synchronous', 'periodic', 'hierarchical', 'decoupled'])
+def test_subnormal_local_step_remains_finite(regime):
+    result = evaluate(WANWorkload(sites=1, local_step_s=math.nextafter(0., 1.)), regime)
+    assert result['status'] == 'modeled'
+    assert result['cycle_s'] > 0
+    assert result['useful_compute_fraction'] > 0
+    assert json.loads(json.dumps(result, allow_nan=False)) == result
+
+
+@pytest.mark.parametrize('regime', ['synchronous', 'periodic', 'hierarchical', 'decoupled'])
+def test_compute_overflow_refused_without_rejecting_finite_large_steps(regime):
+    w = WANWorkload(local_step_s=1e308)
+    if regime in ('periodic', 'decoupled'):
+        with pytest.raises(ValueError, match='finite numeric range'):
+            evaluate(w, regime)
+    else:
+        result = evaluate(w, regime)
+        assert result['cycle_s'] == 1e308
+        assert json.loads(json.dumps(result, allow_nan=False)) == result
+    recovered = evaluate(dataclasses.replace(w, local_step_s=1.), regime)
+    assert recovered == evaluate(WANWorkload(), regime)
+
+
+@pytest.mark.parametrize('regime', ['synchronous', 'periodic', 'hierarchical', 'decoupled'])
+def test_inverse_distinguishes_numeric_refusal_from_unreachable_then_recovers(regime):
+    w = WANWorkload(rtt_ms=0, local_sync_s=0, inner_steps=1, failure_rate_per_site_h=0)
+    with pytest.raises(ValueError, match='finite numeric range'):
+        required_bandwidth(dataclasses.replace(w, bandwidth_health=math.nextafter(0., 1.)), .8, regime)
+    assert required_bandwidth(dataclasses.replace(w, bandwidth_health=0), .8, regime) is None
+    bw = required_bandwidth(w, .8, regime)
+    result = evaluate(dataclasses.replace(w, aggregate_gbps=bw), regime)
+    assert math.isclose(result['useful_compute_fraction'], .8)
+    assert json.loads(json.dumps(result, allow_nan=False)) == result

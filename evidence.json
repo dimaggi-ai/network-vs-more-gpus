@@ -12,9 +12,9 @@
     "src/netcap/wan.py": {
       "source_type": "model-assumption",
       "location": "src/netcap/wan.py",
-      "version_date": "2026-10-27 UTC current-source revision; disconnected-output metadata correction; SHA-256 bound below",
+      "version_date": "2026-10-27 UTC current-source revision; disconnected metadata and non-finite result refusal; SHA-256 bound below",
       "license_or_reuse": "Repository-authored analysis; third-party facts referenced, no new external raw data redistributed",
-      "scope": "Local authoritative definition or claim. External provenance retained in SOURCES/REFERENCES and inline citations; scenario choices are not empirical measurements. This entry binds current source, not the historical producer version of results/wan-regimes.json. The retained 2026-09-10 result artifact is unchanged and reproduces byte-for-byte after this metadata-only correction. Its 432-row grid uses bandwidth_health 0.5 and 1; disconnected inputs are covered by separate tests."
+      "scope": "Local authoritative definition or claim. External provenance retained in SOURCES/REFERENCES and inline citations; scenario choices are not empirical measurements. This entry binds current source, not the historical producer version of results/wan-regimes.json. The retained 2026-09-10 result artifact is unchanged and reproduces byte-for-byte after the disconnected metadata and numeric-range refusal corrections. Its 432-row grid uses bandwidth_health 0.5 and 1; disconnected and extreme finite-input cases are covered by separate tests."
     },
     "results/wan-regimes.json": {
       "source_type": "experiment-output",
@@ -203,7 +203,7 @@
     },
     {
       "path": "src/netcap/wan.py",
-      "sha256": "29dea635e50a3493d004d73ccefc4c5987d9fb759b0dd1bd239d2fa9075f3733"
+      "sha256": "459f09f019124388ea6cb9c30b95ca3037fa4c46afed253c0c4411a285eb44e0"
     },
     {
       "path": "results/wan-regimes.json",

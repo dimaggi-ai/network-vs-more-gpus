@@ -59,16 +59,24 @@ def evaluate(w: WANWorkload, regime='synchronous'):
     failure_rate=w.failure_rate_per_site_h*w.sites/3600
     availability=1/(1+failure_rate*w.recovery_s)
     useful=compute/cycle*availability
-    return dict(regime=regime,evidence_class='derived',input_class='scenario',status='modeled',
+    result = dict(regime=regime,evidence_class='derived',input_class='scenario',status='modeled',
                 communication_s=comm,cycle_s=cycle,communication_per_step_s=comm/interval,
                 useful_compute_fraction=useful,availability_assumption=availability,
                 communication_overhead_fraction=(cycle-compute)/cycle,
                 convergence_validated=False,
                 limitation='Communication/service bound only; useful token progress and model quality are not established.')
+    if any(not math.isfinite(value) for value in result.values()
+           if type(value) in (int, float)):
+        raise ValueError('WAN result exceeds finite numeric range; revise workload scale or bandwidth assumptions')
+    return result
 
 
 def required_bandwidth(w, target_fraction, regime='synchronous', maximum_gbps=1e6):
-    """Bisection over the SAME model; None means target exceeds its search bound."""
+    """Invert the same model; None means unreachable within the search bound.
+
+    Numeric-range ValueError from evaluate propagates instead of implying an
+    unreachable target.
+    """
     from dataclasses import replace
     if not 0<target_fraction<1 or not math.isfinite(maximum_gbps) or maximum_gbps<=0:
         raise ValueError('invalid target/search bound')
