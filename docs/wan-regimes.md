@@ -33,8 +33,13 @@ model reports compute-service fraction, not convergence-adjusted training
 goodput. No UET, NCCL or production WAN implementation is exercised.
 
 `required_bandwidth` inverts this same model for a target service fraction;
-it returns `None` when the target exceeds the declared search bound. A numeric-
-range refusal propagates as `ValueError`, distinct from an unreachable target.
+it returns `None` when the target exceeds the declared search bound. The upper
+search bound must have a finite evaluation; otherwise its numeric-range refusal
+propagates as `ValueError`. With a finite feasible upper bracket, communication
+or cycle overflow at a lower midpoint is treated as insufficient bandwidth,
+so a representable solution is still found. Fixed workload inputs do not change
+during this search; in every regime, less bandwidth only increases communication
+and additive/max cycle time. Other errors propagate rather than becoming `None`.
 Latency or failure overhead can make a target unreachable even with more
 bandwidth. Tests cover the two-site analytical case, degradation, zero-link
 capacity, local operation and inversion consistency.

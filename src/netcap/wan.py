@@ -9,6 +9,12 @@ import math
 from .collectives import ring_allreduce_time
 
 
+class _ResultRangeError(ValueError):
+    def __init__(self, fields):
+        self.fields = frozenset(fields)
+        super().__init__('WAN result exceeds finite numeric range; revise workload scale or bandwidth assumptions')
+
+
 @dataclass(frozen=True)
 class WANWorkload:
     sites: int = 8
@@ -65,17 +71,19 @@ def evaluate(w: WANWorkload, regime='synchronous'):
                 communication_overhead_fraction=(cycle-compute)/cycle,
                 convergence_validated=False,
                 limitation='Communication/service bound only; useful token progress and model quality are not established.')
-    if any(not math.isfinite(value) for value in result.values()
-           if type(value) in (int, float)):
-        raise ValueError('WAN result exceeds finite numeric range; revise workload scale or bandwidth assumptions')
+    invalid = {name for name, value in result.items()
+               if type(value) in (int, float) and not math.isfinite(value)}
+    if invalid:
+        raise _ResultRangeError(invalid)
     return result
 
 
 def required_bandwidth(w, target_fraction, regime='synchronous', maximum_gbps=1e6):
     """Invert the same model; None means unreachable within the search bound.
 
-    Numeric-range ValueError from evaluate propagates instead of implying an
-    unreachable target.
+    The upper bound must evaluate finitely. With that feasible bracket, only
+    communication/cycle overflow at a lower midpoint means insufficient bandwidth;
+    unrelated failures and an unrepresentable upper bound still propagate.
     """
     from dataclasses import replace
     if not 0<target_fraction<1 or not math.isfinite(maximum_gbps) or maximum_gbps<=0:
@@ -84,6 +92,20 @@ def required_bandwidth(w, target_fraction, regime='synchronous', maximum_gbps=1e
     if evaluate(replace(w,aggregate_gbps=hi),regime)['useful_compute_fraction']<target_fraction: return None
     for _ in range(70):
         mid=(lo+hi)/2
-        if evaluate(replace(w,aggregate_gbps=mid),regime)['useful_compute_fraction']>=target_fraction: hi=mid
+        try:
+            fraction = evaluate(replace(w,aggregate_gbps=mid),regime)['useful_compute_fraction']
+        except _ResultRangeError as error:
+            # Fixed compute/local/failure inputs already passed at hi. For all
+            # four regimes, less bandwidth only increases communication and
+            # additive/max cycle time. A lower overflowing point cannot improve
+            # on the finite upper bracket; do not reinterpret other errors.
+            if (not error.fields.intersection({'communication_s', 'cycle_s'})
+                    or not error.fields.issubset({'communication_s', 'cycle_s',
+                        'communication_per_step_s', 'useful_compute_fraction',
+                        'communication_overhead_fraction'})):
+                raise
+            lo = mid
+            continue
+        if fraction>=target_fraction: hi=mid
         else: lo=mid
     return hi
