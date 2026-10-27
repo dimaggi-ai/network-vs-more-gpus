@@ -6,6 +6,13 @@ Inputs include RTT, aggregate circuit bandwidth, simultaneous groups, update
 bytes, local compute time, bandwidth degradation, latency inflation, fail-slow
 participants and declared failure/recovery assumptions.
 
+Both modeled and disconnected outputs use `evidence_class="derived"` and
+`input_class="scenario"`: outputs are computed from declared assumptions,
+not live-network measurements. Zero bandwidth health with multiple sites
+reports `status="disconnected"`, zero useful compute fraction and null
+communication/cycle times; convergence remains unvalidated. A single site
+needs no WAN exchange and stays modeled at zero bandwidth health.
+
 The synchronous schedule exchanges every step. The periodic schedule exchanges
 after a declared number of local steps. The hierarchical schedule adds a local
 reduction cost before the inter-site exchange. The decoupled schedule is an

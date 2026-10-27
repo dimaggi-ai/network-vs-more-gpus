@@ -47,7 +47,7 @@ def evaluate(w: WANWorkload, regime='synchronous'):
     # fail-slow bottleneck member bounds collective throughput.
     bandwidth=w.aggregate_gbps*1e9/8*w.efficiency*w.bandwidth_health/w.concurrent_groups/w.fail_slow_multiplier
     if bandwidth==0 and w.sites>1:
-        return dict(regime=regime,evidence_class='scenario',status='disconnected',useful_compute_fraction=0.,
+        return dict(regime=regime,evidence_class='derived',input_class='scenario',status='disconnected',useful_compute_fraction=0.,
                     communication_s=None,cycle_s=None,convergence_validated=False)
     comm=ring_allreduce_time(w.update_bytes,w.sites,bandwidth or 1.,w.rtt_ms/2000*w.latency_inflation)
     local=w.local_sync_s if regime=='hierarchical' else 0.

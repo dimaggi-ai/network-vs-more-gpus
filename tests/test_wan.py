@@ -1,5 +1,6 @@
 import dataclasses
 import math
+import json
 import pytest
 from netcap.wan import WANWorkload,evaluate,required_bandwidth
 
@@ -28,3 +29,34 @@ def test_required_bandwidth_round_trip_and_unreachable_target():
 @pytest.mark.parametrize('bad',[float('nan'),float('inf'),-1,True])
 def test_invalid_inputs(bad):
     with pytest.raises(ValueError): WANWorkload(rtt_ms=bad)
+
+
+@pytest.mark.parametrize('regime', ['synchronous', 'periodic', 'hierarchical', 'decoupled'])
+def test_provenance_survives_disconnect_and_recovery(regime):
+    w = WANWorkload()
+    healthy = evaluate(w, regime)
+    disconnected = evaluate(dataclasses.replace(w, bandwidth_health=0), regime)
+    recovered = evaluate(w, regime)
+    for result in (healthy, disconnected, recovered):
+        assert result['evidence_class'] == 'derived'
+        assert result['input_class'] == 'scenario'
+        assert result['convergence_validated'] is False
+        assert json.loads(json.dumps(result, allow_nan=False)) == result
+    assert disconnected == dict(
+        regime=regime, evidence_class='derived', input_class='scenario',
+        status='disconnected', useful_compute_fraction=0.,
+        communication_s=None, cycle_s=None, convergence_validated=False)
+    assert recovered == healthy
+
+
+@pytest.mark.parametrize('regime', ['synchronous', 'periodic', 'hierarchical', 'decoupled'])
+def test_single_site_zero_bandwidth_remains_modeled(regime):
+    w = WANWorkload(sites=1)
+    local = evaluate(dataclasses.replace(w, bandwidth_health=0), regime)
+    assert local == evaluate(w, regime)
+    assert local['status'] == 'modeled'
+    assert local['evidence_class'] == 'derived'
+    assert local['input_class'] == 'scenario'
+    assert local['communication_s'] == 0
+    assert local['convergence_validated'] is False
+    assert json.loads(json.dumps(local, allow_nan=False)) == local
