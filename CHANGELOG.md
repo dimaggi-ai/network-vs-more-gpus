@@ -4,7 +4,7 @@
 
 - Adds the existing span tier, latency-regime atlas and span validation to the release scope since 1.0.0.
 - Includes bounded WAN accounting, observability, installed CLI repair and historical experiment outputs.
-- Preserves disconnected-state provenance and refuses nonfinite WAN outputs; repairs finite inversion across overflowing lower brackets. At the extreme search upper bound `maximum_gbps=1e300`, returned feasible widths can still miss minimum-width accuracy after 70 linear halvings.
+- Preserves disconnected-state provenance and refuses nonfinite WAN outputs; repairs finite inversion across overflowing lower brackets. `required_bandwidth` resolves widths only to about `maximum_gbps/2^70`: at `1e300`, the default workload/target 0.5 returns about `8.5e278` Gbit/s in every regime despite different minima. These feasible answers convey no useful minimum-width information. Keep the bound near the expected answer; the default `1e6` resolution is about `8.5e-16` Gbit/s.
 - Validates span numeric/integer input domains without silent string coercion; constrains active halls to the named degree and retains nondivisible supported cuts.
 - Compatibility: span values accept Python `int`/`float` only (not NumPy scalars). YAML 1.1 `4e2` parses as text and is refused; use `400` or `4.0e+2` for bandwidth. Halls and active degrees require integer values.
 - Adds an optional offline capability-declaration applicability API with explicit flat-switched abstraction, precision/unit/provenance checks. It does not authorize or execute a model.
