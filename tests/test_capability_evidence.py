@@ -19,7 +19,8 @@ def control():
         Quantity(80., "GB", "per_accelerator", "not_applicable"),
         Quantity(100., "GB/s", "per_accelerator", "unidirectional"),
         Quantity(400., "Gbit/s", "per_accelerator", "unidirectional"),
-        context, Provenance("synthetic:unit-test", "fixture-v1", DATE, "a" * 64, "synthetic"))
+        context, Provenance("synthetic:unit-test", "fixture-v1", DATE, "a" * 64, "synthetic"),
+        scaleup_topology="flat_switched")
 
 
 class ApplicabilityTests(unittest.TestCase):
@@ -153,6 +154,40 @@ class ApplicabilityTests(unittest.TestCase):
             r = self.assess(replace(p, context=changed), expected=changed)
             self.assertEqual(r.status, "unsupported")
 
+    def test_missing_or_unknown_scaleup_topology_is_incomplete(self):
+        p = control()
+        for value in [None, "unknown"]:
+            with self.subTest(value=value):
+                r = self.assess(replace(p, scaleup_topology=value))
+                self.assertEqual(r.status, "incomplete")
+                self.assertIsNone(r.inputs)
+        omitted = CapabilityEvidence(p.hardware, p.precision, p.sparsity, p.compute,
+                                     p.memory, p.scaleup, p.scaleout, p.context, p.provenance)
+        self.assertEqual(self.assess(omitted).status, "incomplete")
+
+    def test_nonflat_scaleup_topologies_are_unsupported(self):
+        p = control()
+        for value in ["torus", "3D_torus", "Boardfly", "dragonfly", "switched", "flat"]:
+            with self.subTest(value=value):
+                r = self.assess(replace(p, scaleup_topology=value))
+                self.assertEqual(r.status, "unsupported")
+                self.assertIsNone(r.inputs)
+        # Corrected declaration is only an abstract synthetic fixture, not a
+        # method for relabelling real nonflat hardware to force a pass.
+        self.assertEqual(self.assess(p).status, "applicable_to_declared_model")
+        self.assertIn("topology_calibration", self.assess(p).unknown_dimensions)
+
+    def test_scaleup_topology_type_and_record_binding(self):
+        p = control()
+        for value in ["", " flat_switched", "flat_switched\n", [], 1, True]:
+            self.assertEqual(self.assess(replace(p, scaleup_topology=value)).status, "invalid")
+        # Removing the declaration invalidates applicability instead of reusing
+        # the previous successful assessment or its record hash.
+        old = self.assess(p)
+        changed = self.assess(replace(p, scaleup_topology=None))
+        self.assertIsNotNone(old.record_sha256)
+        self.assertIsNone(changed.record_sha256)
+
     def test_invalid_context(self):
         p = control()
         for field, value in [("window_seconds", True), ("window_seconds", 10**10000),
@@ -175,6 +210,22 @@ class ApplicabilityTests(unittest.TestCase):
         self.assertEqual(self.assess(replace(p, scaleup={})).status, "invalid")
         with self.assertRaises(TypeError):
             CapabilityEvidence(**(asdict(p) | {"extra": "dropped?"}))
+
+    def test_defensive_bounds_are_not_operating_ranges(self):
+        p = control()
+        upper = self.assess(replace(p, compute=replace(p.compute, value=1e100)))
+        self.assertEqual(upper.status, "applicable_to_declared_model")
+        self.assertAlmostEqual(upper.inputs.peak_flops_bf16 / 1e115, 1.)
+        tiny = self.assess(replace(p, compute=replace(p.compute, value=5e-324, unit="FLOP/s")))
+        self.assertEqual(tiny.status, "applicable_to_declared_model")
+        self.assertGreater(tiny.inputs.peak_flops_bf16, 0)
+
+    def test_record_hash_preserves_supplied_numeric_representation(self):
+        p = control()
+        integer = self.assess(replace(p, compute=replace(p.compute, value=1)))
+        floating = self.assess(replace(p, compute=replace(p.compute, value=1.0)))
+        self.assertEqual(integer.inputs, floating.inputs)
+        self.assertNotEqual(integer.record_sha256, floating.record_sha256)
 
     def test_deterministic_without_mutation_and_record_binding(self):
         p = control()

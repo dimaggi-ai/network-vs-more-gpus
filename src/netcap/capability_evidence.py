@@ -63,6 +63,7 @@ class CapabilityEvidence:
     scaleout: Quantity | None
     context: ComparisonContext
     provenance: Provenance | None
+    scaleup_topology: str | None = None  # explicit flat_switched declaration required
     # These dimensions are retained as explicit unknowns, never substituted by 0.
     unknown_dimensions: tuple[str, ...] = UNMODELED_DIMENSIONS
 
@@ -139,6 +140,12 @@ def assess(evidence: CapabilityEvidence, expected: ComparisonContext, *,
             unsupported.append("only dense_decoder_only is represented")
         if evidence.context.topology_model != "netcap_four_tier":
             unsupported.append("only the netcap_four_tier abstraction is represented; no topology calibration inferred")
+    if evidence.scaleup_topology is None or evidence.scaleup_topology == "unknown":
+        missing.append("scaleup_topology must explicitly declare flat_switched; domain size alone is insufficient")
+    elif not _text(evidence.scaleup_topology):
+        invalid.append("scaleup_topology must be bounded text or None")
+    elif evidence.scaleup_topology != "flat_switched":
+        unsupported.append("only the declared flat_switched scale-up abstraction fits; no torus, Boardfly, dragonfly, hop or bisection model is implemented")
     if not all(_text(v) for v in (evidence.hardware, evidence.precision, evidence.sparsity)):
         invalid.append("hardware, precision and sparsity must be nonempty bounded text")
     if evidence.precision != "BF16":
@@ -189,7 +196,11 @@ def assess(evidence: CapabilityEvidence, expected: ComparisonContext, *,
         if q.unit not in units or q.scope != "per_accelerator" or q.direction != direction:
             unsupported.append(f"{name}: require units {tuple(units)}, per_accelerator, {direction}; no inferred conversion of scope/direction")
             continue
-        normalized.append(q.value * units[q.unit])
+        converted = q.value * units[q.unit]
+        if not math.isfinite(converted) or converted <= 0:
+            invalid.append(f"{name} normalization must remain finite and positive")
+            continue
+        normalized.append(converted)
     if invalid:
         return result("invalid", invalid + missing + unsupported)
     if missing:

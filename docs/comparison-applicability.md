@@ -9,6 +9,15 @@ injection bandwidth. An FP4 peak cannot populate `peak_flops_bf16`. A domain's
 aggregate rate cannot be divided by its chip count to infer injection bandwidth;
 a bidirectional rate cannot simply be halved. Unknown units and scope are refused.
 
+The scale-up tier uses one per-rank rate and a constant latency; it has no hop,
+diameter, bisection or expert all-to-all model. A profile must explicitly declare
+`scaleup_topology="flat_switched"` in addition to the `netcap_four_tier` context.
+Missing/unknown topology is incomplete. Torus, Boardfly, dragonfly and other
+nonflat topology declarations are unsupported. Domain size alone cannot qualify
+such a profile. This is a declaration of the modeled flat abstraction, not
+authentication that a physical fabric is switched or nonblocking; topology
+calibration remains unknown even when the declaration passes.
+
 ## Synthetic success, refusal and correction
 
 These are invented fixture values, not specifications or measurements of a vendor
@@ -35,6 +44,7 @@ profile = CapabilityEvidence(
     context=context,
     provenance=Provenance("synthetic:example", "fixture-v1", "2026-11-03",
                           "a" * 64, "synthetic"),
+    scaleup_topology="flat_switched",  # explicit synthetic model assumption
 )
 result = assess(profile, context, as_of="2026-11-03")
 assert result.status == "applicable_to_declared_model"
@@ -63,7 +73,7 @@ an analyst's declarations are correct.
 
 - `invalid`: wrong type, non-finite/nonpositive or out-of-bound number, malformed
   date, unbounded/control-character text, or invalid typed context.
-- `incomplete`: required quantity or provenance is missing. No normalized inputs
+- `incomplete`: required quantity, provenance or scale-up topology declaration is missing. No normalized inputs
   are returned; a missing value never becomes zero.
 - `unsupported`: precision, sparsity, units, direction, scope, declared model or
   context do not fit, or an explicitly declared evidence expiry has passed.
@@ -74,7 +84,10 @@ Exact decimal conversions are supported for FLOP/s, TFLOP/s and PFLOP/s;
 Gbit/s, Tbit/s, GB/s and TB/s; and memory GB or explicitly binary GiB. Conversion
 does not imply any hardware efficiency, collective bandwidth or precision
 conversion. Numeric inputs must be builtin integers or floats, not booleans or
-numeric strings, positive and finite, and at most `1e100`. Parallelism degrees
+numeric strings, positive and finite, and at most `1e100` before unit conversion.
+Converted values must remain finite and positive; the bound is not a physical
+plausibility check (`1e100 PFLOP/s` becomes `1e115 FLOP/s`, and tiny positive
+values are allowed). Parallelism degrees
 are integer values from 1 to 1,000,000. These are defensive API bounds, not
 validated hardware operating ranges. The API accepts typed dataclasses, not
 arbitrary JSON; it supplies no permissive parser or unknown-field dropping.
@@ -93,7 +106,9 @@ and evidence class. It never visits the source or checks that these statements
 are true. The source hash is supplied metadata, not authentication. The returned
 `record_sha256` identifies the supplied evidence, expected context, explicit
 assessment date and gate-version label; it is not a signature or proof of
-execution. Any changed record must be assessed again.
+execution. It identifies the record as supplied, not normalized semantic identity:
+for example, numeric `1` and `1.0` produce different hashes even when their
+normalized inputs are equal. Any changed record must be assessed again.
 
 There is no implicit clock or invented age cutoff. `as_of` is caller-supplied,
 and a future retrieval date is invalid relative to it. An optional, explicitly
@@ -111,7 +126,8 @@ PYTHONPATH=src python3 -m unittest discover -s tests -p test_capability_evidence
 
 The synthetic fault matrix exercises omitted quantities/provenance, precision and
 sparsity substitution, ambiguous dimensions, explicit expiry, malformed dates,
-invalid numeric values, workload/quality/context mismatch, correction, repeatable
+invalid numeric values, missing/nonflat scale-up topology, workload/quality/context
+mismatch, correction, repeatable
 hashes and input preservation. It makes no network, subprocess or device calls.
 These checks qualify this metadata contract only. They do not qualify host or
 network isolation, silicon, cooling, a stateful agent loop, or any physical
