@@ -10,6 +10,26 @@ tp 8 / pp 16 / dp 128) and is reproducible with
 registry are computed on the untuned Llama 3 scenario instead and will differ in
 the last digits; each is labelled where it appears. That split is D8.
 
+## Input and fixed-plan boundaries
+
+The generation-sensitivity baseline holds the H100-class tp8/pp16 plan fixed.
+Changing accelerator declarations does not search or reoptimize a parallel plan.
+`memory_gb` is descriptive: no memory-capacity feasibility check rejects a shard
+that cannot fit. Consequently, these results do not establish feasible execution
+on another accelerator generation or a hardware purchasing recommendation.
+The span circuit's Gbit/s is aggregate capacity shared by crossing groups, not
+per-accelerator bandwidth.
+
+Span inputs require a positive integer `halls` (excluding booleans), finite
+nonnegative `alpha_span_us` and `span_bw_gbps`, and positive bandwidth for an
+active span. Numeric strings are refused rather than silently coerced. The
+active named cut's degree must also be a positive integer, with `halls` no larger
+than that degree. A one-hall default remains inactive with zero span latency
+and bandwidth. Nondivisible cuts remain supported by the existing ceiling-sized
+local-group abstraction (for example, degree 8 over 3 halls): it approximates an
+incomplete last hall, not a validated physical placement. No divisibility or
+physical-topology feasibility claim is added.
+
 ## The short version
 
 The question everyone asks about scale-across is "how far apart can the halls
@@ -117,7 +137,8 @@ Retention is reported only at or below 3.2 Tbit/s. Above 12.8 Tbit/s the tier
 model develops a genuine artifact — a split job comes out up to 0.36 percent
 *faster* than a hall-local one, because each hall's residual group occupies
 fewer pods — and the wider probe circuit is used only inside fixed-width
-comparisons, where the effect cancels on both sides.
+comparisons, where the effect cancels on both sides. This above-ceiling
+crossover is a model artifact, not a deployment recommendation.
 
 ## A stitch does not scale with the cluster it serves
 
