@@ -4,7 +4,8 @@ All experiment parameters live in dataclasses that round-trip to YAML. No
 experiment parameter is hard-coded anywhere else in the package.
 
 Units are stated explicitly in field names. Bandwidth fields are per-accelerator
-and expressed in Gbit/s (line rate, before the efficiency derate in
+except the aggregate shared span circuit, and are expressed in Gbit/s
+(line rate, before the efficiency derate in
 ``TopologySpec.net_efficiency``). Time fields are seconds unless suffixed.
 """
 
@@ -21,6 +22,25 @@ import yaml
 GIGA = 1e9
 TERA = 1e12
 SECONDS_PER_DAY = 86400.0
+
+
+def _finite_nonnegative(value: Any, name: str) -> None:
+    """Validate a span scalar without converting strings, booleans or huge ints."""
+    try:
+        valid = type(value) in (int, float) and value >= 0 and math.isfinite(value)
+    except OverflowError:
+        valid = False
+    if not valid:
+        raise ValueError(f"{name} must be a finite nonnegative number (not bool or string)")
+
+
+def _positive_integer(value: Any, name: str) -> None:
+    try:
+        valid = type(value) is int and value >= 1 and math.isfinite(value)
+    except OverflowError:
+        valid = False
+    if not valid:
+        raise ValueError(f"{name} must be a finite positive integer (not bool or string)")
 
 
 @dataclass(frozen=True)
@@ -119,8 +139,9 @@ class TopologySpec:
             raise ValueError(f"unknown span_dimension {self.span_dimension!r}")
         if self.span_placement not in ("hierarchical", "blind"):
             raise ValueError(f"unknown span_placement {self.span_placement!r}")
-        if self.halls < 1:
-            raise ValueError("halls must be >= 1")
+        _positive_integer(self.halls, "halls")
+        _finite_nonnegative(self.alpha_span_us, "alpha_span_us")
+        _finite_nonnegative(self.span_bw_gbps, "span_bw_gbps")
         if self.halls > 1 and self.span_dimension == "none":
             raise ValueError("halls > 1 requires a named span_dimension")
         if self.spans and self.span_bw_gbps <= 0.0:
@@ -221,6 +242,12 @@ class ScenarioConfig:
     notes: str = ""
 
     def __post_init__(self) -> None:
+        if self.topology.spans:
+            cut = self.topology.span_dimension
+            degree = getattr(self.parallelism, cut)
+            _positive_integer(degree, f"parallelism.{cut}")
+            if self.topology.halls > degree:
+                raise ValueError(f"halls must not exceed parallelism.{cut} ({degree})")
         if self.n_pool == 0:
             # Accelerators paid for: the job's world size plus the spare and
             # stranded overhead that the operator also owns but cannot compute on.
@@ -244,16 +271,20 @@ _SECTION_TYPES = {
 }
 
 
-def _coerce(section_type: type, values: Dict[str, Any]) -> Dict[str, Any]:
+def _coerce(section_type: type, values: Dict[str, Any], strict_fields: tuple[str, ...] = ()) -> Dict[str, Any]:
     """Cast YAML-parsed values to the declared field types.
 
     PyYAML follows YAML 1.1, which does not recognize ``4.05e11`` as a float
     because the exponent lacks a sign. Rather than requiring configs to be
-    written defensively, values are coerced against the dataclass annotations.
+    written defensively, legacy values are coerced against the dataclass annotations.
+    Span scalars and the active named degree explicitly bypass that legacy path.
     """
     hints = {f.name: f.type for f in dataclasses.fields(section_type)}
     out: Dict[str, Any] = {}
     for key, value in values.items():
+        if key in strict_fields or (section_type is TopologySpec and key in ("halls", "alpha_span_us", "span_bw_gbps")):
+            out[key] = value
+            continue
         target = hints.get(key)
         if isinstance(value, str) and target is not None and "float" in str(target):
             out[key] = float(value)
@@ -269,10 +300,17 @@ def _coerce(section_type: type, values: Dict[str, Any]) -> Dict[str, Any]:
 def scenario_from_dict(data: Dict[str, Any]) -> ScenarioConfig:
     """Build a :class:`ScenarioConfig` from a plain dict (typically parsed YAML)."""
     kwargs: Dict[str, Any] = {}
+    # Validate topology first regardless of YAML mapping order; only an active
+    # cut opts its parallel degree out of the legacy numeric-string coercion.
+    topology = TopologySpec(**_coerce(TopologySpec, data["topology"]))
     for key, value in data.items():
         if key in _SECTION_TYPES:
             section_type = _SECTION_TYPES[key]
-            kwargs[key] = section_type(**_coerce(section_type, value))
+            if key == "topology":
+                kwargs[key] = topology
+            else:
+                strict = (topology.span_dimension,) if key == "parallelism" and topology.spans else ()
+                kwargs[key] = section_type(**_coerce(section_type, value, strict))
         elif key == "window_days" and isinstance(value, (int, str)):
             kwargs[key] = float(value)
         else:
