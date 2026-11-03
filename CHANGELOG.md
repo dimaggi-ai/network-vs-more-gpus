@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.0 (release candidate; not released)
+
+- Adds the existing span tier, latency-regime atlas and span validation to the release scope since 1.0.0.
+- Includes bounded WAN accounting, observability, installed CLI repair and historical experiment outputs.
+- Preserves disconnected-state provenance and refuses nonfinite WAN outputs; repairs finite inversion across overflowing lower brackets. At the extreme search upper bound `maximum_gbps=1e300`, returned feasible widths can still miss minimum-width accuracy after 70 linear halvings.
+- Validates span numeric/integer input domains without silent string coercion; constrains active halls to the named degree and retains nondivisible supported cuts.
+- Compatibility: span values accept Python `int`/`float` only (not NumPy scalars). YAML 1.1 `4e2` parses as text and is refused; use `400` or `4.0e+2` for bandwidth. Halls and active degrees require integer values.
+- Adds an optional offline capability-declaration applicability API with explicit flat-switched abstraction, precision/unit/provenance checks. It does not authorize or execute a model.
+- Clarifies fixed H100-class tp8/pp16 study plans, absent memory-capacity feasibility and automatic replanning, aggregate span bandwidth and model-only claims.
+- Includes intervening article, README, validation CI and cover-art changes in the candidate manifest.
+
+See [the candidate manifest and remaining gates](docs/releases/v1.1.0.md). Existing result artifacts retain their historical producer identities and are not fresh candidate measurements.
+
 ## 1.0.0 (2026-08-05)
 
 First public release.
