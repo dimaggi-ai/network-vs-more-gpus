@@ -37,12 +37,20 @@ What could be done instead was validation against published measurements: one co
 | Useful capacity collapses with scale at fixed batch | Productive share falls from 0.781 at 1,024 accelerators to 0.382 at 65,536 | Strong scaling; validated at 8,192 and 16,384 |
 | The informal equivalent-GPU metric is badly biased | Understates value by 1.4x at 2,048 accelerators, 4.6x at 65,536 | Structural, follows from marginal accelerator productivity |
 | No single intervention dominates | Three different interventions rank first across 96 in-scope regime cells | Failure rate by oversubscription grid at two scales |
-| Bandwidth is rarely the best marginal buy at 16K scale | Ranks first in 0.6% of 323 uncertainty draws; reliability and recovery improvements take the other 99.4% | 16,384 accelerators, documented parameter ranges |
+| Bandwidth is rarely the best marginal buy at 16K scale | Ranks first in 0.6% of 323 uncertainty draws; reliability and recovery improvements take the other 99.4% | Fixed H100-class tp8/pp16 plan, 16,384 accelerators, documented parameter ranges; no memory-feasibility or plan search |
 | Recovery improvements are complements, not substitutes | Bundle worth 8.9% more than the sum of parts, against a hypothesis that predicted the opposite | All regimes tested |
 | Beyond a point, accelerators cannot substitute at all | At ~131,000 accelerators throughput peaks 1.2% above baseline then falls; the reliability intervention exceeds anything purchasable | Both implementations agree to 0.03% on this case |
 | Spreading a job across halls: placement beats distance | A 1,000x change in round-trip time costs the data-parallel cut 1.2 points; reordering the ranks at fixed distance costs it 2.7x, and the pipeline cut 6.5x | Two halls, 400 Gbit/s, both placements reported for every cell |
 | Tensor-parallel never survives a stitch, checkpoint traffic never notices one | Tensor-parallel retains 0.004 at any distance; checkpoint retention is flat to four decimals across a 1,000x RTT range | The atlas, all widths tested |
 | A fixed stitch erodes as the cluster grows | Pipeline-cut retention falls 0.919 to 0.506 from 4,096 to 65,536 accelerators on an unchanged 120 km, 800 Gbit/s circuit | Why a two-site field trial does not extrapolate |
+
+**Generation-sensitivity boundary.** These study results use a fixed H100-class
+tp8/pp16 parallel plan. Substituting accelerator declarations does not reoptimize
+the plan or test memory-capacity feasibility: `memory_gb` is descriptive and does
+not reject a model shard that cannot fit. The marginal-buy ordering is conditional
+on this fixed plan and parameter range, not a cross-generation purchasing rule.
+Span bandwidth is an aggregate shared circuit, not a per-accelerator allocation.
+See the [atlas limits](docs/regime-atlas.md) before interpreting a span result.
 
 ## Scale-across: can a job be spread across halls?
 

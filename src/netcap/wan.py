@@ -9,6 +9,12 @@ import math
 from .collectives import ring_allreduce_time
 
 
+class _ResultRangeError(ValueError):
+    def __init__(self, fields):
+        self.fields = frozenset(fields)
+        super().__init__('WAN result exceeds finite numeric range; revise workload scale or bandwidth assumptions')
+
+
 @dataclass(frozen=True)
 class WANWorkload:
     sites: int = 8
@@ -47,7 +53,7 @@ def evaluate(w: WANWorkload, regime='synchronous'):
     # fail-slow bottleneck member bounds collective throughput.
     bandwidth=w.aggregate_gbps*1e9/8*w.efficiency*w.bandwidth_health/w.concurrent_groups/w.fail_slow_multiplier
     if bandwidth==0 and w.sites>1:
-        return dict(regime=regime,evidence_class='scenario',status='disconnected',useful_compute_fraction=0.,
+        return dict(regime=regime,evidence_class='derived',input_class='scenario',status='disconnected',useful_compute_fraction=0.,
                     communication_s=None,cycle_s=None,convergence_validated=False)
     comm=ring_allreduce_time(w.update_bytes,w.sites,bandwidth or 1.,w.rtt_ms/2000*w.latency_inflation)
     local=w.local_sync_s if regime=='hierarchical' else 0.
@@ -59,16 +65,26 @@ def evaluate(w: WANWorkload, regime='synchronous'):
     failure_rate=w.failure_rate_per_site_h*w.sites/3600
     availability=1/(1+failure_rate*w.recovery_s)
     useful=compute/cycle*availability
-    return dict(regime=regime,evidence_class='derived',input_class='scenario',status='modeled',
+    result = dict(regime=regime,evidence_class='derived',input_class='scenario',status='modeled',
                 communication_s=comm,cycle_s=cycle,communication_per_step_s=comm/interval,
                 useful_compute_fraction=useful,availability_assumption=availability,
                 communication_overhead_fraction=(cycle-compute)/cycle,
                 convergence_validated=False,
                 limitation='Communication/service bound only; useful token progress and model quality are not established.')
+    invalid = {name for name, value in result.items()
+               if type(value) in (int, float) and not math.isfinite(value)}
+    if invalid:
+        raise _ResultRangeError(invalid)
+    return result
 
 
 def required_bandwidth(w, target_fraction, regime='synchronous', maximum_gbps=1e6):
-    """Bisection over the SAME model; None means target exceeds its search bound."""
+    """Invert the same model; None means unreachable within the search bound.
+
+    The upper bound must evaluate finitely. With that feasible bracket, only
+    communication/cycle overflow at a lower midpoint means insufficient bandwidth;
+    unrelated failures and an unrepresentable upper bound still propagate.
+    """
     from dataclasses import replace
     if not 0<target_fraction<1 or not math.isfinite(maximum_gbps) or maximum_gbps<=0:
         raise ValueError('invalid target/search bound')
@@ -76,6 +92,20 @@ def required_bandwidth(w, target_fraction, regime='synchronous', maximum_gbps=1e
     if evaluate(replace(w,aggregate_gbps=hi),regime)['useful_compute_fraction']<target_fraction: return None
     for _ in range(70):
         mid=(lo+hi)/2
-        if evaluate(replace(w,aggregate_gbps=mid),regime)['useful_compute_fraction']>=target_fraction: hi=mid
+        try:
+            fraction = evaluate(replace(w,aggregate_gbps=mid),regime)['useful_compute_fraction']
+        except _ResultRangeError as error:
+            # Fixed compute/local/failure inputs already passed at hi. For all
+            # four regimes, less bandwidth only increases communication and
+            # additive/max cycle time. A lower overflowing point cannot improve
+            # on the finite upper bracket; do not reinterpret other errors.
+            if (not error.fields.intersection({'communication_s', 'cycle_s'})
+                    or not error.fields.issubset({'communication_s', 'cycle_s',
+                        'communication_per_step_s', 'useful_compute_fraction',
+                        'communication_overhead_fraction'})):
+                raise
+            lo = mid
+            continue
+        if fraction>=target_fraction: hi=mid
         else: lo=mid
     return hi
