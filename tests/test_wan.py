@@ -183,7 +183,7 @@ def test_inverse_does_not_swallow_other_midpoint_errors(monkeypatch):
     monkeypatch.setattr(wan, 'evaluate', broken_midpoint)
     with pytest.raises(ValueError, match='unrelated evaluator error'):
         wan.required_bandwidth(WANWorkload(rtt_ms=0, failure_rate_per_site_h=0), .8)
-    assert calls == [1e6, (1e6 + 1e-9) / 2]
+    assert calls == [1e6, 1e-9 + (1e6 - 1e-9) / 2]
 
 
 @pytest.mark.parametrize('regime', ['periodic', 'decoupled'])
@@ -228,3 +228,64 @@ def test_inverse_recovers_from_additive_cycle_overflow_with_finite_communication
     result = evaluate(dataclasses.replace(w, aggregate_gbps=bw), regime)
     assert result['useful_compute_fraction'] >= .8
     assert json.loads(json.dumps(result, allow_nan=False)) == result
+
+
+def _inverse_oracle(w, target, regime):
+    """Independent ring/renewal algebra, not the inverse implementation."""
+    compute = w.local_step_s * (w.inner_steps if regime in ('periodic', 'decoupled') else 1)
+    availability = 1 / (1 + w.failure_rate_per_site_h * w.sites / 3600 * w.recovery_s)
+    local = w.local_sync_s if regime == 'hierarchical' else 0
+    latency = (w.sites - 1) * w.rtt_ms / 1000 * w.latency_inflation
+    coefficient = (2 * (w.sites - 1) / w.sites * w.update_bytes * 8 *
+                   w.concurrent_groups * w.fail_slow_multiplier /
+                   (1e9 * w.efficiency * w.bandwidth_health))
+    allowance = compute * availability / target - local
+    if regime != 'decoupled':
+        allowance -= compute
+    return coefficient / (allowance - latency)
+
+
+@pytest.mark.parametrize('regime', ['synchronous', 'periodic', 'hierarchical', 'decoupled'])
+@pytest.mark.parametrize('maximum', [1e3, 1e6, 1e30, 1e300, 1e308])
+def test_inverse_wide_brackets_match_analytic_threshold(regime, maximum):
+    w = WANWorkload()
+    answer = required_bandwidth(w, .5, regime, maximum)
+    assert math.isclose(answer, _inverse_oracle(w, .5, regime), rel_tol=1e-12)
+    assert 0 < answer <= maximum
+    assert evaluate(dataclasses.replace(w, aggregate_gbps=answer), regime)['useful_compute_fraction'] >= .5
+
+
+@pytest.mark.parametrize('maximum', [math.nextafter(0., 1.), 1e-12, 1e-9, 1e3])
+@pytest.mark.parametrize('changes', [{'sites': 1}, {'update_bytes': 0, 'rtt_ms': 0}])
+def test_inverse_floor_never_exceeds_supplied_maximum(maximum, changes):
+    w = WANWorkload(**changes)
+    answer = required_bandwidth(w, .5, maximum_gbps=maximum)
+    assert 0 < answer <= maximum
+    assert math.isclose(answer, min(1e-9, maximum), rel_tol=1e-15)
+    assert evaluate(dataclasses.replace(w, aggregate_gbps=answer))['useful_compute_fraction'] >= .5
+
+
+def test_inverse_exact_endpoint_and_public_refusal_recovery():
+    w = WANWorkload()
+    target = evaluate(dataclasses.replace(w, aggregate_gbps=50))['useful_compute_fraction']
+    result = required_bandwidth(w, target, maximum_gbps=50)
+    assert result <= 50
+    assert evaluate(dataclasses.replace(w, aggregate_gbps=result))['useful_compute_fraction'] >= target
+    assert required_bandwidth(w, target, maximum_gbps=40) is None
+    with pytest.raises(ValueError, match='unknown synchronization'):
+        required_bandwidth(w, target, 'unsupported')
+    assert required_bandwidth(w, target, maximum_gbps=50) == result
+
+
+def test_inverse_evaluator_calls_are_bounded(monkeypatch):
+    from netcap import wan
+    original = wan.evaluate
+    calls = []
+    def counted(w, regime):
+        calls.append(w.aggregate_gbps)
+        return original(w, regime)
+    monkeypatch.setattr(wan, 'evaluate', counted)
+    result = wan.required_bandwidth(WANWorkload(), .5, maximum_gbps=1e308)
+    assert math.isclose(result, 48.70123850489468, rel_tol=1e-12)
+    assert 1 < len(calls) <= 2049
+    assert calls[0] == 1e308
