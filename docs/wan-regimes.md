@@ -41,7 +41,16 @@ so a representable solution is still found. Fixed workload inputs do not change
 during this search; in every regime, less bandwidth only increases communication
 and additive/max cycle time. Other errors propagate rather than becoming `None`.
 Latency or failure overhead can make a target unreachable even with more
-bandwidth. Tests cover the two-site analytical case, degradation, zero-link
+bandwidth. The inverse retains a nominal `1e-9` Gbps search floor, clamped
+to `maximum_gbps` when the caller supplies a smaller maximum. It never returns
+a successful answer above that maximum. A target already feasible at the floor
+is floor-limited; this is not a claim about the mathematical minimum below it.
+The search retains an evaluator-confirmed feasible upper endpoint, uses a safe
+midpoint and stops when no representable interior midpoint remains, with a hard
+2,048-iteration cap. This corrects the fixed-70-halving loss of accuracy on wide
+intervals without changing the model. The returned floating-point endpoint is
+conditional on the evaluator and bracket, not a production bandwidth guarantee.
+Historical release notes describe the behavior of their original source. Tests cover the two-site analytical case, degradation, zero-link
 capacity, local operation and inversion consistency.
 
 These scenario results do not yet price waiting for local capacity versus

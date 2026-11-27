@@ -88,10 +88,14 @@ def required_bandwidth(w, target_fraction, regime='synchronous', maximum_gbps=1e
     from dataclasses import replace
     if not 0<target_fraction<1 or not math.isfinite(maximum_gbps) or maximum_gbps<=0:
         raise ValueError('invalid target/search bound')
-    hi=maximum_gbps;lo=1e-9
+    hi=maximum_gbps;lo=min(1e-9, hi)
     if evaluate(replace(w,aggregate_gbps=hi),regime)['useful_compute_fraction']<target_fraction: return None
-    for _ in range(70):
-        mid=(lo+hi)/2
+    # Binary64 exponent range plus mantissa refinement fits this fixed cap
+    # above the retained floor. Keep hi feasible until endpoints are adjacent.
+    for _ in range(2048):
+        mid=lo+(hi-lo)/2
+        if mid == lo or mid == hi:
+            break
         try:
             fraction = evaluate(replace(w,aggregate_gbps=mid),regime)['useful_compute_fraction']
         except _ResultRangeError as error:

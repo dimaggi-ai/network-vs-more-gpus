@@ -203,7 +203,7 @@
     },
     {
       "path": "src/netcap/wan.py",
-      "sha256": "5f0403b115a13670a271e8e85088fcfc7d90266cc2654b25b091126bc5d6495c"
+      "sha256": "741f8cf1f91405b9c64266475706015465cfde860d3f4c0e2a6ba80fdb516f6a"
     },
     {
       "path": "results/wan-regimes.json",
